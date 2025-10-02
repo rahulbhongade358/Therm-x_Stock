@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-
+import { postLogin, postSignin } from "./controllers/user.js";
 dotenv.config();
 
 const app = express();
@@ -25,6 +25,10 @@ app.get("/health", (req, res) => {
     message: "Therm-x Server is healthy",
   });
 });
+
+app.post("/login", postLogin);
+app.post("/signin", postSignin);
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
