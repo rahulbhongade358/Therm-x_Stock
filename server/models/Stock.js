@@ -8,7 +8,8 @@ const stockSchema = new Schema(
     minRequired: { type: Number, required: true },
     lastUpdated: { type: Date, default: Date.now },
     remarks: { type: String },
-    addedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional
+    addedBy: { type: Schema.Types.ObjectId, ref: "User" },
+    companyname: { type: String, required: true },
   },
   { timestamps: true }
 );
