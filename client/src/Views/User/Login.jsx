@@ -1,31 +1,40 @@
 import React, { useState } from "react";
-
+import axios from "axios";
+import { Link } from "react-router";
+import toast, { Toaster } from "react-hot-toast";
 function Login() {
-  const [formData, setFormData] = useState({
+  const [loginuser, setLoginuser] = useState({
     email: "",
     password: "",
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login Data:", formData);
+  const login = async () => {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/login`,
+      loginuser
+    );
+    if (response?.data?.success) {
+      toast.success(response.data.message);
+      localStorage.setItem("userlogin", JSON.stringify(response.data.user));
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-lg p-8 w-96">
         <h2 className="text-2xl font-bold text-center mb-6">Welcome Back</h2>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-4">
           <input
             type="email"
             name="email"
             placeholder="Email Address"
-            value={formData.email}
-            onChange={handleChange}
+            value={loginuser.email}
+            onChange={(e) => {
+              setLoginuser({ ...loginuser, email: e.target.value });
+            }}
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             required
           />
@@ -33,29 +42,32 @@ function Login() {
             type="password"
             name="password"
             placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
+            value={loginuser.password}
+            onChange={(e) => {
+              setLoginuser({ ...loginuser, password: e.target.value });
+            }}
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
             required
           />
           <button
-            type="submit"
+            onClick={login}
             className="bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition"
           >
             Login
           </button>
-        </form>
+        </div>
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Don’t have an account?{" "}
-          <a
-            href="/signup"
+          <Link
+            to="/signup"
             className="text-orange-500 font-medium hover:underline"
           >
             Create one
-          </a>
+          </Link>
         </p>
       </div>
+      <Toaster className="position top right" />
     </div>
   );
 }

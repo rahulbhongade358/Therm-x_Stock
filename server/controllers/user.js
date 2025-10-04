@@ -59,7 +59,9 @@ const postLogin = async (req, res) => {
     });
   }
 
-  const existinguser = await User.findOne({ email, password });
+  const existinguser = await User.findOne({ email, password }).select(
+    " _id name email role"
+  );
   if (existinguser) {
     res.json({
       success: true,
