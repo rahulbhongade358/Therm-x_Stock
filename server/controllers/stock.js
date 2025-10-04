@@ -1,4 +1,4 @@
-import Stock from "../models/Stock";
+import Stock from "./../models/Stock.js";
 
 const postStock = async (req, res) => {
   const {
