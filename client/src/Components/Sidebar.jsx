@@ -1,22 +1,35 @@
 import React from "react";
 import { Link } from "react-router";
+
 function Sidebar() {
   return (
-    <div className="w-64 bg-gray-800 text-white flex flex-col p-4">
-      <h1 className="text-2xl font-bold mb-8">Therm-X</h1>
-      <nav className="flex flex-col gap-4">
+    <div className="w-64 bg-gray-900 text-white flex flex-col p-5 shadow-lg">
+      <h1 className="text-3xl font-extrabold mb-10 text-center tracking-wide">
+        Therm-X
+      </h1>
+      <nav className="flex flex-col gap-3">
         <Link to="/dashboard">
-          <button className="hover:bg-gray-700 p-2 rounded">Dashboard</button>
+          <button className="w-full text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
+            Dashboard
+          </button>
         </Link>
-        <Link to="/addstocks">
-          <button className="hover:bg-gray-700 p-2 rounded">Add Stock</button>
+        <Link to="/allstocks">
+          <button className="w-full text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
+            Stocks
+          </button>
         </Link>
-        <button className="hover:bg-gray-700 p-2 rounded">Update Stock</button>
-        <button className="hover:bg-gray-700 p-2 rounded">Reports</button>
+        <button className="text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
+          Reports
+        </button>
         <Link to="/login">
-          <button className="hover:bg-gray-700 p-2 rounded">Login</button>
+          <button className="w-full text-left hover:bg-red-600 p-3 rounded-lg transition-colors duration-200">
+            Logout / Login
+          </button>
         </Link>
       </nav>
+      <footer className="mt-auto text-sm text-gray-400 text-center pt-6 border-t border-gray-700">
+        © 2025 Therm-X Pvt. Ltd.
+      </footer>
     </div>
   );
 }

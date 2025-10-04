@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getCurrentuser } from "./../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-function AddStockModal() {
+function AddStockModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [newStock, setNewStock] = useState({
     thickness: "",
@@ -23,7 +23,7 @@ function AddStockModal() {
       if (response?.data?.success) {
         toast.success(response.data.message);
         setTimeout(() => {
-          window.location.href = "/bloglist";
+          window.location.href = "/";
         }, 2000);
       }
     } catch (error) {
@@ -93,7 +93,11 @@ function AddStockModal() {
             }}
           />
           <div className="flex justify-end gap-3 mt-2">
-            <button type="button" className="px-4 py-2 rounded border">
+            <button
+              type="button"
+              className="px-4 py-2 rounded border"
+              onClick={onClose}
+            >
               Cancel
             </button>
             <button

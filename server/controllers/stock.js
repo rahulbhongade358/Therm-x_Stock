@@ -1,6 +1,6 @@
 import Stock from "./../models/Stock.js";
 
-const postStock = async (req, res) => {
+const postStocks = async (req, res) => {
   const {
     thickness,
     size,
@@ -41,5 +41,14 @@ const postStock = async (req, res) => {
     message: "Stock is saved Successfully",
   });
 };
+const getStocks = async (req, res) => {
+  const stocks = await Stock.find().populate("addedBy", "_id name email");
 
-export { postStock };
+  res.status(200).json({
+    success: true,
+    message: "Stocks fetched successfully",
+    data: stocks,
+  });
+};
+
+export { postStocks, getStocks };
