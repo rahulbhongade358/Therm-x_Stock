@@ -6,6 +6,7 @@ import Dashboard from "./Views/Dashboard.jsx";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
+import AddStockModal from "./Components/AddStockModal.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Router>
@@ -14,6 +15,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signin />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/addstocks" element={<AddStockModal />} />
     </Routes>
   </Router>
 );
