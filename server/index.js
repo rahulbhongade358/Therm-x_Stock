@@ -10,22 +10,29 @@ import {
   putStocksbyID,
   getStockbySearch,
 } from "./controllers/stock.js";
-dotenv.config();
 
+dotenv.config();
 const app = express();
+
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://therm-x-stock-in.onrender.com", // frontend URL
+    credentials: true,
+  })
+);
 
 const connectDB = async () => {
   try {
-    const connect = await mongoose.connect(process.env.MONGO_URL);
-    if (connect) {
-      console.log("✅ MongoDB connected successfully");
-    }
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("✅ MongoDB connected successfully");
   } catch (error) {
-    console.log(`MongoDB connection error: ${error.message}`);
+    console.error(`MongoDB connection error: ${error.message}`);
+    process.exit(1); // exit server if DB fails
   }
 };
+
+// Routes
 app.get("/health", (req, res) => {
   res.json({
     success: true,
@@ -40,8 +47,13 @@ app.get("/allstocks", getStocks);
 app.get("/stocks/search", getStockbySearch);
 app.get("/stocks/:ID", getStocksbyID);
 app.put("/stocks/:ID", putStocksbyID);
+
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  connectDB();
-});
+const startServer = async () => {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+};
+
+startServer();
