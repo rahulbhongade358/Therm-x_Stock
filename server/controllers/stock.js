@@ -79,4 +79,56 @@ const getStocksbyID = async (req, res) => {
     });
   }
 };
-export { postStocks, getStocks, getStocksbyID };
+
+const putStocksbyID = async (req, res) => {
+  const { ID } = req.params;
+  const {
+    thickness,
+    size,
+    quantity,
+    minRequired,
+    remarks,
+    addedBy,
+    companyname,
+  } = req.body;
+  const existingStock = await Stock.findOne({ _id: ID });
+  if (!existingStock) {
+    return res.status(404).json({
+      success: false,
+      message: "Blog not Found",
+    });
+  }
+  if (
+    !thickness ||
+    !size ||
+    !quantity ||
+    !minRequired ||
+    !remarks ||
+    addedBy ||
+    companyname
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required ",
+    });
+  }
+  const updatestock = await Stock.findByIdAndUpdate(
+    { _id: ID },
+    {
+      thickness,
+      size,
+      quantity,
+      minRequired,
+      remarks,
+      addedBy,
+      companyname,
+    }
+  );
+  return res.status(200).json({
+    success: true,
+    message: "Stock updated successfully",
+    data: updatestock,
+  });
+};
+
+export { postStocks, getStocks, getStocksbyID, putStocksbyID };
