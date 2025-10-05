@@ -104,8 +104,8 @@ const putStocksbyID = async (req, res) => {
     !quantity ||
     !minRequired ||
     !remarks ||
-    addedBy ||
-    companyname
+    !addedBy ||
+    !companyname
   ) {
     return res.status(400).json({
       success: false,
