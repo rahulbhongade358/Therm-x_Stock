@@ -8,11 +8,6 @@ function Sidebar() {
         Therm-X
       </h1>
       <nav className="flex flex-col gap-3">
-        <Link to="/dashboard">
-          <button className="w-full text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
-            Dashboard
-          </button>
-        </Link>
         <Link to="/allstocks">
           <button className="w-full text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
             Stocks

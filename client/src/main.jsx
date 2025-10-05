@@ -5,19 +5,19 @@ import Signin from "./Views/User/Signin.jsx";
 import Dashboard from "./Views/Dashboard.jsx";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.jsx";
 import AddStockModal from "./Components/AddStockModal.jsx";
 import StockTable from "./Components/StockTable.jsx";
+import Update from "./Views/Update.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Router>
     <Routes>
-      <Route path="/" element={<App />} />
+      <Route path="/" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signin />} />
-      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/addstocks" element={<AddStockModal />} />
       <Route path="/allstocks" element={<StockTable />} />
+      <Route path="/update/:id" element={<Update />} />
     </Routes>
   </Router>
 );
