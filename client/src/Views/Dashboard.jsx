@@ -4,7 +4,6 @@ import Navbar from "../Components/Navbar";
 import AddStockModal from "../Components/AddStockModal";
 import axios from "axios";
 import { getCurrentuser } from "../utils/utils";
-import { Link } from "react-router";
 
 function Dashboard() {
   const [showModal, setShowModal] = useState(false);
@@ -84,7 +83,6 @@ function Dashboard() {
                   <th className="px-3 sm:px-4 py-2 text-left">Last Updated</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Remarks</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Company</th>
-                  <th className="px-3 sm:px-4 py-2 text-left">Action</th>
                 </tr>
               </thead>
               <tbody className="text-gray-700">
@@ -126,9 +124,6 @@ function Dashboard() {
                         )}
                       </td>
                       <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                      <Link to={`/update/${s._id}`}>
-                        <td className="px-3 sm:px-4 py-2">Update</td>
-                      </Link>
                     </tr>
                   ))
                 )}
