@@ -23,7 +23,6 @@ function Dashboard() {
     Stocks();
   }, [logginUser]);
 
-  // Summary card data
   const summaryData = [
     { title: "Total Stock Items", value: stocks.length, color: "bg-blue-500" },
     {
@@ -40,22 +39,20 @@ function Dashboard() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
 
-        {/* Main Section */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               📦 Stock Dashboard
             </h2>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
-            >
-              + Add Stock
-            </button>
+            {logginUser ? (
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
+              >
+                + Add Stock
+              </button>
+            ) : null}
           </div>
-
-          {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {summaryData.map((item, index) => (
               <SummaryCard
