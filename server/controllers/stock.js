@@ -51,4 +51,32 @@ const getStocks = async (req, res) => {
   });
 };
 
-export { postStocks, getStocks };
+const getStocksbyID = async (req, res) => {
+  const { ID } = req.params;
+
+  const response = await Stock.findById(ID).populate(
+    "addedBy",
+    "_id name email"
+  );
+  try {
+    if (response) {
+      res.status(201).json({
+        success: true,
+        data: response,
+        message: "Stock fetched successfully",
+      });
+    } else {
+      res.json({
+        success: false,
+        data: null,
+        message: "❌ No Stock found with the given ID",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: "❌ Invalid ID format",
+    });
+  }
+};
+export { postStocks, getStocks, getStocksbyID };

@@ -25,12 +25,10 @@ function StockTable() {
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mx-4 sm:mx-6 mb-8">
-      {/* Header */}
       <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">
         📋 Current Stock
       </h2>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden text-sm sm:text-base">
           <thead className="bg-gray-900 text-white uppercase text-xs sm:text-sm tracking-wide">
@@ -90,7 +88,6 @@ function StockTable() {
         </table>
       </div>
 
-      {/* Footer */}
       <div className="mt-4 text-gray-600 font-medium text-sm sm:text-base">
         Total Stocks: <span className="font-bold">{stocks.length}</span>
       </div>
