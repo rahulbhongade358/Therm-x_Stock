@@ -82,19 +82,13 @@ const getStocksbyID = async (req, res) => {
 
 const getStockbySearch = async (req, res) => {
   const { q } = req.query;
-  console.log(q);
   const conditions = [];
   if (!isNaN(q)) {
     conditions.push({ thickness: Number(q) });
   }
-  if (typeof q === "string" || q.includes("*")) {
-    const escapedQuery = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    conditions.push({ size: { $regex: escapedQuery, $options: "i" } });
-  }
 
   conditions.push({ companyname: { $regex: q, $options: "i" } });
   const Stocks = await Stock.find({ $or: conditions });
-  console.log(q);
   try {
     if (Stocks.length == 0) {
       return res.status(404).json({

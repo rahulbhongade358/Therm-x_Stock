@@ -27,7 +27,8 @@ function StockTable() {
         error.response?.data?.message ||
         "⚠️ Unable to fetch stock data. Please try again later.";
 
-      toast.error(message, { duration: 3000, id: "search-error" });
+      toast.error(message, { id: "search-error" });
+      toast.dismiss();
       setStocks([]);
     }
   };
