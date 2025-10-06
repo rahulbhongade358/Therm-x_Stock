@@ -2,36 +2,28 @@ import Stock from "./../models/Stock.js";
 
 const postStocks = async (req, res) => {
   const {
+    sheetType,
     thickness,
     size,
     quantity,
     minRequired,
-    remarks,
-    addedBy,
+    approxArea,
+    shapeDescription,
     companyname,
+    addedBy,
+    remarks,
   } = req.body;
-  if (
-    (!thickness,
-    !size,
-    !quantity,
-    !minRequired,
-    !remarks,
-    !addedBy,
-    !companyname)
-  ) {
-    return res.json({
-      success: false,
-      message: "All Fields Are Required",
-    });
-  }
   const newStock = new Stock({
+    sheetType,
     thickness,
     size,
     quantity,
     minRequired,
-    remarks,
-    addedBy,
+    approxArea,
+    shapeDescription,
     companyname,
+    addedBy,
+    remarks,
   });
   const saveStock = await newStock.save();
 

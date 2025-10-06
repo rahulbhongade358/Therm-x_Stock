@@ -41,19 +41,22 @@ function Dashboard() {
         <Navbar />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          {/* Header + Add Stock Button */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               📦 Stock Dashboard
             </h2>
-            {logginUser ? (
+            {logginUser && (
               <button
                 onClick={() => setShowModal(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
               >
                 + Add Stock
               </button>
-            ) : null}
+            )}
           </div>
+
+          {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {summaryData.map((item, index) => (
               <SummaryCard
@@ -65,6 +68,7 @@ function Dashboard() {
             ))}
           </div>
 
+          {/* Stock Table */}
           <div className="bg-white shadow-lg rounded-2xl p-4 sm:p-6 overflow-x-auto">
             <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">
               📋 Current Stock List
@@ -72,9 +76,7 @@ function Dashboard() {
             <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden text-sm sm:text-base">
               <thead className="bg-gray-900 text-white uppercase text-xs sm:text-sm tracking-wide">
                 <tr>
-                  <th className="px-3 sm:px-4 py-2 text-left">
-                    Thickness (mm)
-                  </th>
+                  <th className="px-3 sm:px-4 py-2 text-left">Thickness</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Size</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Quantity</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Min Required</th>
@@ -137,16 +139,19 @@ function Dashboard() {
       </div>
     </div>
   );
-  function SummaryCard({ title, value, color }) {
-    return (
-      <div
-        className={`rounded-2xl shadow-md p-4 sm:p-5 text-white ${color} transition transform hover:scale-105`}
-      >
-        <h4 className="text-xs sm:text-sm opacity-90">{title}</h4>
-        <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{value}</p>
-      </div>
-    );
-  }
+}
+{
+  /* Summary Card Component */
+}
+function SummaryCard({ title, value, color }) {
+  return (
+    <div
+      className={`rounded-2xl shadow-md p-4 sm:p-5 text-white ${color} transition transform hover:scale-105`}
+    >
+      <h4 className="text-xs sm:text-sm opacity-90">{title}</h4>
+      <p className="text-2xl sm:text-3xl font-bold mt-1 sm:mt-2">{value}</p>
+    </div>
+  );
 }
 
 export default Dashboard;

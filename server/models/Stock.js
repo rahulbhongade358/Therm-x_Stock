@@ -10,6 +10,14 @@ const stockSchema = new Schema(
     remarks: { type: String },
     addedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     companyname: { type: String, required: true },
+    sheetType: {
+      type: String,
+      enum: ["regular", "remnant"],
+      default: "regular",
+    },
+    approxArea: { type: String },
+    shapeDescription: { type: String },
+    photo: { type: String },
   },
   { timestamps: true }
 );
