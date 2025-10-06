@@ -17,10 +17,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "https://therm-x-stock-in.onrender.com", // deployed frontend
-      "http://localhost:5173", // local frontend
-    ],
+    origin: "https://therm-x-stock-in.onrender.com",
     credentials: true,
   })
 );
