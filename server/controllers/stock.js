@@ -111,6 +111,7 @@ const putStocksbyID = async (req, res) => {
     remarks,
     addedBy,
     companyname,
+    shapeDescription,
   } = req.body;
   const existingStock = await Stock.findOne({ _id: ID });
   if (!existingStock) {
@@ -133,7 +134,7 @@ const putStocksbyID = async (req, res) => {
       message: "All fields are required ",
     });
   }
-  const updatestock = await Stock.findByIdAndUpdate(
+  const updatestock = await Stock.findOneAndUpdate(
     { _id: ID },
     {
       thickness,
@@ -143,6 +144,8 @@ const putStocksbyID = async (req, res) => {
       remarks,
       addedBy,
       companyname,
+      shapeDescription,
+      sheetType: "remnant",
     }
   );
   return res.status(200).json({

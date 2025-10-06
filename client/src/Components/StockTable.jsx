@@ -76,6 +76,7 @@ function StockTable() {
               <th className="px-3 sm:px-4 py-2 text-left">Quantity</th>
               <th className="px-3 sm:px-4 py-2 text-left">Min Required</th>
               <th className="px-3 sm:px-4 py-2 text-left">Last Updated</th>
+              <th className="px-3 sm:px-4 py-2 text-left">Sheet Type</th>
               <th className="px-3 sm:px-4 py-2 text-left">Remarks</th>
               <th className="px-3 sm:px-4 py-2 text-left">Company</th>
               <th className="px-3 sm:px-4 py-2 text-left">Action</th>
@@ -107,6 +108,9 @@ function StockTable() {
                   <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
                   <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
                     {s.lastUpdated}
+                  </td>
+                  <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                    {s.sheetType}
                   </td>
                   <td className="px-3 sm:px-4 py-2">
                     {s.quantity < s.minRequired ? (
