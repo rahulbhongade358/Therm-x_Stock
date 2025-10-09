@@ -1,3 +1,4 @@
+import RemnantStock from "../models/Remnant.js";
 import Stock from "./../models/Stock.js";
 
 const postStocks = async (req, res) => {
@@ -35,11 +36,16 @@ const postStocks = async (req, res) => {
 };
 const getStocks = async (req, res) => {
   const stocks = await Stock.find().populate("addedBy", "_id name email");
+  const remnantstock = await RemnantStock.find().populate(
+    "orignalsheetid",
+    "_id quantity"
+  );
 
   res.status(200).json({
     success: true,
     message: "Stocks fetched successfully",
     data: stocks,
+    remnantstock: remnantstock,
   });
 };
 
@@ -80,9 +86,11 @@ const getStockbySearch = async (req, res) => {
   }
 
   conditions.push({ companyname: { $regex: q, $options: "i" } });
+  conditions.push({ sheetType: { $regex: q, $options: "i" } });
   const Stocks = await Stock.find({ $or: conditions });
+  const Remnant = await RemnantStock.find({ $or: conditions });
   try {
-    if (Stocks.length == 0) {
+    if (Stocks.length == 0 && Remnant.length == 0) {
       return res.status(404).json({
         success: false,
         data: [],
@@ -92,6 +100,7 @@ const getStockbySearch = async (req, res) => {
     res.json({
       success: true,
       data: Stocks,
+      remnantstock: Remnant,
       message: ` ${Stocks.length} Stocks fetched successfully`,
     });
   } catch (error) {

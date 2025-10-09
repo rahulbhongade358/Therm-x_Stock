@@ -1,6 +1,6 @@
 import { model, Schema } from "mongoose";
 
-const stockSchema = new Schema(
+const newRemnant = new Schema(
   {
     thickness: { type: Number, required: true },
     size: { type: String, required: true },
@@ -13,12 +13,16 @@ const stockSchema = new Schema(
     sheetType: {
       type: String,
     },
-    approxArea: { type: String },
+    orignalsheetid: {
+      type: Schema.Types.ObjectId,
+      ref: "Stock",
+      required: true,
+    },
     shapeDescription: { type: String },
     photo: { type: String },
   },
   { timestamps: true }
 );
 
-const Stock = model("Stock", stockSchema);
-export default Stock;
+const RemnantStock = model("RemnantStock", newRemnant);
+export default RemnantStock;
