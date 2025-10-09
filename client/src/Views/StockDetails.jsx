@@ -10,18 +10,15 @@ const StockDetails = () => {
 
   const fetchData = async () => {
     try {
-      // fetch regular stock
       const stockRes = await axios.get(
         `${import.meta.env.VITE_API_URL}/stocks/${id}`
       );
-
-      // fetch remnant stock
       const remnantRes = await axios.get(
         `${import.meta.env.VITE_API_URL}/remnantstocks/${id}`
       );
 
-      setStockData(stockRes?.data?.data || {});
-      setRemnantData(remnantRes?.data?.data || {});
+      setStockData(stockRes?.data?.data);
+      setRemnantData(remnantRes?.data?.data);
     } catch (err) {
       console.error("Error fetching data:", err);
     }
