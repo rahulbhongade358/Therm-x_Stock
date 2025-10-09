@@ -186,7 +186,7 @@ function StockTable() {
                   </td>
                   <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
                   {logginUser ? (
-                    <Link to={`/update/${s._id}`}>
+                    <Link to={`/updateremnant/${s._id}`}>
                       <td className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-800 cursor-pointer font-medium">
                         Update
                       </td>

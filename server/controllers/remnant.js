@@ -66,4 +66,73 @@ const postRemnantStocks = async (req, res) => {
 //   }
 // };
 
-export { postRemnantStocks };
+const putRemnantStocksbyID = async (req, res) => {
+  const { ID } = req.params;
+  const {
+    thickness,
+    size,
+    quantity,
+    minRequired,
+    remarks,
+    addedBy,
+    companyname,
+    shapeDescription,
+  } = req.body;
+  const existingStock = await RemnantStock.findOne({ _id: ID });
+  if (!existingStock) {
+    return res.status(404).json({
+      success: false,
+      message: "Blog not Found",
+    });
+  }
+  const updatestock = await RemnantStock.findOneAndUpdate(
+    { _id: ID },
+    {
+      thickness,
+      size,
+      quantity: 1,
+      minRequired,
+      remarks,
+      addedBy,
+      companyname,
+      shapeDescription,
+      sheetType: "remnant",
+    }
+  );
+  return res.status(200).json({
+    success: true,
+    message: "Stock updated successfully",
+    data: updatestock,
+  });
+};
+
+const getRemnantStocksbyID = async (req, res) => {
+  const { ID } = req.params;
+
+  const response = await RemnantStock.findById(ID).populate(
+    "addedBy",
+    "_id name email"
+  );
+  try {
+    if (response) {
+      res.status(201).json({
+        success: true,
+        data: response,
+        message: "Stock fetched successfully",
+      });
+    } else {
+      res.json({
+        success: false,
+        data: null,
+        message: "❌ No Stock found with the given ID",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: "❌ Invalid ID format",
+    });
+  }
+};
+
+export { postRemnantStocks, putRemnantStocksbyID, getRemnantStocksbyID };

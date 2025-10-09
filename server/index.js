@@ -10,14 +10,21 @@ import {
   putStocksbyID,
   getStockbySearch,
 } from "./controllers/stock.js";
-import { postRemnantStocks } from "./controllers/remnant.js";
+import {
+  postRemnantStocks,
+  putRemnantStocksbyID,
+  getRemnantStocksbyID,
+} from "./controllers/remnant.js";
 dotenv.config();
 const app = express();
 
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://therm-x-stock-in.onrender.com",
+    origin: [
+      "https://therm-x-stock-in.onrender.com", // deployed frontend
+      "http://localhost:5173", // local frontend
+    ],
     credentials: true,
   })
 );
@@ -47,7 +54,9 @@ app.post("/remnantstocks", postRemnantStocks);
 app.get("/allstocks", getStocks);
 app.get("/stocks/search", getStockbySearch);
 app.get("/stocks/:ID", getStocksbyID);
+app.get("/remnantstocks/:ID", getRemnantStocksbyID);
 app.put("/stocks/:ID", putStocksbyID);
+app.put("/remnantstocks/:ID", putRemnantStocksbyID);
 
 const PORT = process.env.PORT || 8080;
 const startServer = async () => {
