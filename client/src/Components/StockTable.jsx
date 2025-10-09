@@ -98,48 +98,50 @@ function StockTable() {
               </tr>
             ) : (
               stocks.map((s) => (
-                <tr
-                  key={s._id}
+                <Link
+                  to={`/stockdetails/${s._id}`}
                   className={`border-b transition-all duration-150 hover:bg-gray-50 ${
                     s.quantity < 3 ? "bg-red-50" : ""
                   }`}
                 >
-                  <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                  <td className="px-3 sm:px-4 py-2">{s.size}</td>
-                  <td className="px-3 sm:px-4 py-2 font-semibold">
-                    {s.quantity}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
-                  <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                    {s.lastUpdated}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                    {s.sheetType}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2">
-                    {s.quantity < 3 ? (
-                      <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                        ⚠ Low Stock
-                      </span>
+                  <tr key={s._id}>
+                    <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
+                    <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                    <td className="px-3 sm:px-4 py-2 font-semibold">
+                      {s.quantity}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
+                    <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                      {s.lastUpdated}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                      {s.sheetType}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">
+                      {s.quantity < 3 ? (
+                        <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
+                          ⚠ Low Stock
+                        </span>
+                      ) : (
+                        <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                          OK
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
+                    {logginUser ? (
+                      <Link to={`/update/${s._id}`}>
+                        <td className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-800 cursor-pointer font-medium">
+                          Update
+                        </td>
+                      </Link>
                     ) : (
-                      <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                        OK
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                  {logginUser ? (
-                    <Link to={`/update/${s._id}`}>
-                      <td className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-800 cursor-pointer font-medium">
+                      <td className="px-3 sm:px-4 py-2 text-gray-400 cursor-not-allowed">
                         Update
                       </td>
-                    </Link>
-                  ) : (
-                    <td className="px-3 sm:px-4 py-2 text-gray-400 cursor-not-allowed">
-                      Update
-                    </td>
-                  )}
-                </tr>
+                    )}
+                  </tr>
+                </Link>
               ))
             )}
           </tbody>
@@ -155,48 +157,55 @@ function StockTable() {
               </tr>
             ) : (
               remnantstocks.map((s) => (
-                <tr
-                  key={s._id}
+                <Link
+                  to={`/stockdetails/${s._id}`}
                   className={`border-b transition-all duration-150 hover:bg-gray-50 ${
                     s.quantity < 3 ? "bg-red-50" : ""
                   }`}
                 >
-                  <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                  <td className="px-3 sm:px-4 py-2">{s.size}</td>
-                  <td className="px-3 sm:px-4 py-2 font-semibold">
-                    {s.quantity}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
-                  <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                    {s.lastUpdated}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                    {s.sheetType}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2">
-                    {s.quantity < 1 ? (
-                      <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                        ⚠ Low Stock
-                      </span>
+                  <tr
+                    key={s._id}
+                    className={`border-b transition-all duration-150 hover:bg-gray-50 ${
+                      s.quantity < 3 ? "bg-red-50" : ""
+                    }`}
+                  >
+                    <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
+                    <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                    <td className="px-3 sm:px-4 py-2 font-semibold">
+                      {s.quantity}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
+                    <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                      {s.lastUpdated}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                      {s.sheetType}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">
+                      {s.quantity < 1 ? (
+                        <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
+                          ⚠ Low Stock
+                        </span>
+                      ) : (
+                        <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
+                          OK
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
+                    {logginUser ? (
+                      <Link to={`/updateremnant/${s._id}`}>
+                        <td className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-800 cursor-pointer font-medium">
+                          Update
+                        </td>
+                      </Link>
                     ) : (
-                      <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                        OK
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                  {logginUser ? (
-                    <Link to={`/updateremnant/${s._id}`}>
-                      <td className="px-3 sm:px-4 py-2 text-blue-600 hover:text-blue-800 cursor-pointer font-medium">
+                      <td className="px-3 sm:px-4 py-2 text-gray-400 cursor-not-allowed">
                         Update
                       </td>
-                    </Link>
-                  ) : (
-                    <td className="px-3 sm:px-4 py-2 text-gray-400 cursor-not-allowed">
-                      Update
-                    </td>
-                  )}
-                </tr>
+                    )}
+                  </tr>
+                </Link>
               ))
             )}
           </tbody>

@@ -109,10 +109,9 @@ const putRemnantStocksbyID = async (req, res) => {
 const getRemnantStocksbyID = async (req, res) => {
   const { ID } = req.params;
 
-  const response = await RemnantStock.findById(ID).populate(
-    "addedBy",
-    "_id name email"
-  );
+  const response = await RemnantStock.findById(ID)
+    .populate("orignalsheetid", "quantity _id size")
+    .populate("addedBy", "_id name email");
   try {
     if (response) {
       res.status(201).json({
