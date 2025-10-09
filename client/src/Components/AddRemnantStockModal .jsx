@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { getCurrentuser } from "../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
+import Select from "react-select";
 import axios from "axios";
 function AddStockRemnantModal({ onClose }) {
   const [user, setUser] = useState(null);
+  const [sheetOptions, setSheetOptions] = useState([]);
   const [newStock, setNewStock] = useState({
     sheetType: "remnant",
     thickness: "",
@@ -31,8 +33,25 @@ function AddStockRemnantModal({ onClose }) {
       toast.error(error?.response?.data?.message || "Error saving stock");
     }
   };
+  const fetchSheets = async () => {
+    try {
+      const searchResponse = await axios.get(
+        `${import.meta.env.VITE_API_URL}/allstocks`
+      );
+      setSheetOptions(searchResponse.data.data);
+      const formatted = searchResponse.data.data.map((sheet) => ({
+        value: sheet._id,
+        label: `${sheet.thickness}mm × ${sheet.size} (${sheet.companyname})`,
+      }));
+      setSheetOptions(formatted);
+    } catch (error) {
+      console.error("Error fetching sheets:", error);
+    }
+  };
+
   useEffect(() => {
     setUser(getCurrentuser());
+    fetchSheets();
   }, []);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -57,11 +76,11 @@ function AddStockRemnantModal({ onClose }) {
             options={sheetOptions}
             value={
               sheetOptions.find(
-                (opt) => opt.value === newStock.originalSheetId
+                (opt) => opt.value === newStock.orignalsheetid
               ) || null
             }
             onChange={(selected) =>
-              setNewStock({ ...newStock, originalSheetId: selected.value })
+              setNewStock({ ...newStock, orignalsheetid: selected.value })
             }
             placeholder="Search or select original sheet..."
             isSearchable

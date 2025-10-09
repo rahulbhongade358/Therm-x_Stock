@@ -40,7 +40,7 @@ function Dashboard() {
     },
     {
       title: "Low Stock Items",
-      value: stocks.filter((s) => s.quantity < s.minRequired).length,
+      value: stocks.filter((s) => s.quantity < 3).length,
       color: "bg-red-500",
     },
     { title: "Managed By", value: "Therm-X Team", color: "bg-yellow-500" },
@@ -115,7 +115,7 @@ function Dashboard() {
                     <tr
                       key={s._id}
                       className={`border-b transition-all duration-150 hover:bg-gray-50 ${
-                        s.quantity < s.minRequired ? "bg-red-50" : ""
+                        s.quantity < 3 ? "bg-red-50" : ""
                       }`}
                     >
                       <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
@@ -137,7 +137,7 @@ function Dashboard() {
                           : "—"}
                       </td>
                       <td className="px-3 sm:px-4 py-2">
-                        {s.quantity < s.minRequired ? (
+                        {s.quantity < 3 ? (
                           <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
                             ⚠ Low Stock
                           </span>
