@@ -26,10 +26,17 @@ const postRemnantStocks = async (req, res) => {
   });
   const saveRemnantStock = await newRemnantStock.save();
 
-  await Stock.findByIdAndUpdate(orignalsheetid, {
-    $inc: { quantity: -1 },
-  });
-
+  const updatedOriginal = await Stock.findByIdAndUpdate(
+    orignalsheetid,
+    {
+      $inc: { quantity: -1 },
+    },
+    { new: true }
+  );
+  if (updatedOriginal && updatedOriginal.quantity <= 0) {
+    await Stock.findByIdAndDelete(orignalsheetid);
+    console.log(`Original sheet ${orignalsheetid} deleted as quantity = 0`);
+  }
   res.status(201).json({
     success: true,
     data: saveRemnantStock,
