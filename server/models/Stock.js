@@ -12,7 +12,10 @@ const stockSchema = new Schema(
     companyname: { type: String, required: true },
     sheetType: {
       type: String,
+      enum: ["regular", "remnant"],
+      default: "regular",
     },
+
     approxArea: { type: String },
     shapeDescription: { type: String },
     photo: { type: String },

@@ -3,7 +3,7 @@ import Stock from "./../models/Stock.js";
 
 const postStocks = async (req, res) => {
   const {
-    sheetType,
+    sheetType = "regular",
     thickness,
     size,
     quantity,

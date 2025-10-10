@@ -9,6 +9,7 @@ const postRemnantStocks = async (req, res) => {
     companyname,
     addedBy,
     orignalsheetid,
+    sheetType = "remnant",
     remarks,
   } = req.body;
   const newRemnantStock = new RemnantStock({
@@ -20,7 +21,7 @@ const postRemnantStocks = async (req, res) => {
     orignalsheetid,
     remarks,
     minRequired: 1,
-    sheetType: "remnant",
+    sheetType,
     quantity: 1,
   });
   const saveRemnantStock = await newRemnantStock.save();

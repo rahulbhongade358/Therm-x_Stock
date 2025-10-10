@@ -5,7 +5,7 @@ import axios from "axios";
 function AddStockModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [newStock, setNewStock] = useState({
-    sheetType: "",
+    sheetType: "regular",
     thickness: "",
     size: "",
     quantity: "",

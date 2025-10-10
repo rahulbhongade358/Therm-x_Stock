@@ -27,24 +27,29 @@ function Dashboard() {
     Stocks();
   }, [logginUser]);
 
+  const totalRemnantCount =
+    (stocks?.filter((s) => s.sheetType === "remnant").length || 0) +
+    (remnantstocks?.filter((s) => s.sheetType === "remnant").length || 0);
+
   const summaryData = [
     {
       title: "Total Regular Stock Items",
-      value: stocks.length,
+      value: stocks.filter((s) => s.sheetType === "regular").length, // ✅ only regular sheets
       color: "bg-blue-500",
     },
     {
       title: "Total Remnant-Stock Items",
-      value: remnantstocks.length,
+      value: totalRemnantCount,
       color: "bg-green-500",
     },
     {
       title: "Low Stock Items",
-      value: stocks.filter((s) => s.quantity < 3).length,
+      value: stocks.filter((s) => s.quantity < 1).length,
       color: "bg-red-500",
     },
     { title: "Managed By", value: "Therm-X Team", color: "bg-yellow-500" },
   ];
+
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
       <Sidebar />

@@ -12,6 +12,7 @@ const newRemnant = new Schema(
     companyname: { type: String, required: true },
     sheetType: {
       type: String,
+      default: "remnant",
     },
     orignalsheetid: {
       type: Schema.Types.ObjectId,
