@@ -5,7 +5,7 @@ import axios from "axios";
 function AddStockModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [newStock, setNewStock] = useState({
-    sheetType: "regular",
+    sheetType: "",
     thickness: "",
     size: "",
     quantity: "",
@@ -102,6 +102,29 @@ function AddStockModal({ onClose }) {
               setNewStock({ ...newStock, remarks: e.target.value })
             }
           />
+          <label htmlFor="sheetType">Sheet Type:</label>
+          <select
+            id="sheetType"
+            value={newStock.sheetType}
+            onChange={(e) =>
+              setNewStock({ ...newStock, sheetType: e.target.value })
+            }
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="regular">Regular</option>
+            <option value="remnant">Remnant</option>
+          </select>
+          {newStock?.sheetType === "remnant" ? (
+            <input
+              type="text"
+              placeholder="Shape Description"
+              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={newStock.shapeDescription}
+              onChange={(e) =>
+                setNewStock({ ...newStock, shapeDescription: e.target.value })
+              }
+            />
+          ) : null}
           <div className="flex justify-between mt-4">
             <button
               type="button"

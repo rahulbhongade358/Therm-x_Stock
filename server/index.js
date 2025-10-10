@@ -21,8 +21,10 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://therm-x-stock-in.onrender.com",
-
+    origin: [
+      "https://therm-x-stock-in.onrender.com", // deployed frontend
+      "http://localhost:5173", // local frontend
+    ],
     credentials: true,
   })
 );
@@ -37,6 +39,7 @@ const connectDB = async () => {
   }
 };
 
+// Routes
 app.get("/health", (req, res) => {
   res.json({
     success: true,
