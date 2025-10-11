@@ -163,11 +163,21 @@ const putStocksbyID = async (req, res) => {
     data: updatestock,
   });
 };
-
+const deleteStockbyID = async (req, res) => {
+  const { ID } = req.params;
+  await Stock.findByIdAndDelete(ID);
+  const updatedata = await Stock.find();
+  res.json({
+    success: true,
+    data: updatedata,
+    message: `🐶 Pet Deleted Successfully`,
+  });
+};
 export {
   postStocks,
   getStocks,
   getStocksbyID,
   putStocksbyID,
   getStockbySearch,
+  deleteStockbyID,
 };

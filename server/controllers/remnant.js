@@ -35,7 +35,6 @@ const postRemnantStocks = async (req, res) => {
   );
   if (updatedOriginal && updatedOriginal.quantity <= 0) {
     await Stock.findByIdAndDelete(orignalsheetid);
-    console.log(`Original sheet ${orignalsheetid} deleted as quantity = 0`);
   }
   res.status(201).json({
     success: true,

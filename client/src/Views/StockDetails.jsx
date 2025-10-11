@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
 const StockDetails = () => {
@@ -23,7 +24,15 @@ const StockDetails = () => {
       console.error("Error fetching data:", err);
     }
   };
-
+  const deletesheet = async () => {
+    const del = await axios.delete(
+      `${import.meta.env.VITE_API_URL}/stock/${id}`
+    );
+    if (del) {
+      toast.success("sheet deleted successfully");
+      fetchData();
+    }
+  };
   useEffect(() => {
     fetchData();
   }, [id]);
@@ -36,12 +45,19 @@ const StockDetails = () => {
         </h1>
         {stockData?.sheetType === "regular" ||
         stockData?.sheetType === "remnant" ? (
-          <div className="mb-8">
+          <div className="mb-8 relative">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
               <span className="text-blue-600 text-2xl">📦</span>
               {`${type.charAt(0).toUpperCase() + type.slice(1)} stock`}
             </h2>
-
+            <div
+              className="absolute top-10 right-1.5 bg-red-600 hover:bg-red-500 text-white font-semibold p-2.5 rounded-xl shadow-md transition-all duration-200"
+              onClick={(e) => {
+                deletesheet();
+              }}
+            >
+              <button className="cursor-pointer ">delete</button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-gray-700">
               <p>
                 <span className="font-semibold text-gray-900">Thickness:</span>{" "}
@@ -140,6 +156,8 @@ const StockDetails = () => {
           </button>
         </div>
       </div>
+
+      <Toaster className="position top right" />
     </div>
   );
 };

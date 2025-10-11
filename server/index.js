@@ -9,6 +9,7 @@ import {
   getStocksbyID,
   putStocksbyID,
   getStockbySearch,
+  deleteStockbyID,
 } from "./controllers/stock.js";
 import {
   postRemnantStocks,
@@ -57,6 +58,7 @@ app.get("/stocks/:ID", getStocksbyID);
 app.get("/remnantstocks/:ID", getRemnantStocksbyID);
 app.put("/stocks/:ID", putStocksbyID);
 app.put("/remnantstocks/:ID", putRemnantStocksbyID);
+app.delete("/stock/:ID", deleteStockbyID);
 
 const PORT = process.env.PORT || 8080;
 const startServer = async () => {
