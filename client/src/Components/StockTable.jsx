@@ -72,8 +72,8 @@ function StockTable() {
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden text-sm sm:text-base">
-          <thead className="bg-gray-900 text-white uppercase text-xs sm:text-sm tracking-wide">
+        <table className="max-w-fit border border-gray-200 rounded-lg overflow-hidden text-sm sm:text-base">
+          <thead className="bg-gray-900 text-white  text-xs sm:text-sm ">
             <tr>
               <th className="px-3 sm:px-4 py-2 text-left">Thickness (mm)</th>
               <th className="px-3 sm:px-4 py-2 text-left">Size</th>
@@ -212,12 +212,6 @@ function StockTable() {
         </table>
       </div>
 
-      <div className="mt-4 text-gray-600 font-medium text-sm sm:text-base">
-        Total regular Stocks:{" "}
-        <span className="font-bold">{stocks.length} </span>
-        Total remnant Stocks:{" "}
-        <span className="font-bold">{remnantstocks.length}</span>
-      </div>
       <Toaster className="position top right" />
     </div>
   );

@@ -27,18 +27,19 @@ const StockDetails = () => {
   useEffect(() => {
     fetchData();
   }, [id]);
-
+  const type = stockData?.sheetType;
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-3xl">
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-8 text-center">
           Stock Details
         </h1>
-        {stockData?.sheetType === "regular" ? (
+        {stockData?.sheetType === "regular" ||
+        stockData?.sheetType === "remnant" ? (
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
               <span className="text-blue-600 text-2xl">📦</span>
-              Regular Stock
+              {`${type.charAt(0).toUpperCase() + type.slice(1)} stock`}
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-gray-700">
@@ -53,6 +54,10 @@ const StockDetails = () => {
               <p>
                 <span className="font-semibold text-gray-900">Quantity:</span>{" "}
                 {stockData.quantity}
+              </p>
+              <p>
+                <span className="font-semibold text-gray-900">Sheet Type:</span>{" "}
+                {stockData.sheetType}
               </p>
               <p>
                 <span className="font-semibold text-gray-900">

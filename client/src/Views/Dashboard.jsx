@@ -34,7 +34,7 @@ function Dashboard() {
   const summaryData = [
     {
       title: "Total Regular Stock Items",
-      value: stocks.filter((s) => s.sheetType === "regular").length, // ✅ only regular sheets
+      value: stocks.filter((s) => s.sheetType === "regular").length,
       color: "bg-blue-500",
     },
     {
@@ -142,7 +142,7 @@ function Dashboard() {
                           : "—"}
                       </td>
                       <td className="px-3 sm:px-4 py-2">
-                        {s.quantity < 3 ? (
+                        {s.quantity < 1 ? (
                           <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
                             ⚠ Low Stock
                           </span>
