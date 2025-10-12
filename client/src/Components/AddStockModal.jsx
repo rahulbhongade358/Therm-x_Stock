@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getCurrentuser } from "./../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { ReactSketchCanvas } from "react-sketch-canvas";
 function AddStockModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [newStock, setNewStock] = useState({
@@ -12,7 +13,14 @@ function AddStockModal({ onClose }) {
     remarks: "",
     addedBy: "",
     companyname: "",
+    sheetCanvas: "",
   });
+  const canvasRef = useRef(null);
+  const saveCanva = async () => {
+    const canvaData = await canvasRef.current.exportImage("png");
+    setNewStock((prev) => ({ ...prev, sheetCanvas: canvaData }));
+    toast.success("Shape Saved Successfully");
+  };
   const addstock = async () => {
     try {
       const payload = { ...newStock, addedBy: user?._id };
@@ -105,15 +113,42 @@ function AddStockModal({ onClose }) {
             <option value="remnant">Remnant</option>
           </select>
           {newStock?.sheetType === "remnant" ? (
-            <input
-              type="text"
-              placeholder="Shape Description"
-              className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={newStock.shapeDescription}
-              onChange={(e) =>
-                setNewStock({ ...newStock, shapeDescription: e.target.value })
-              }
-            />
+            <div>
+              <input
+                type="text"
+                placeholder="Shape Description"
+                className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={newStock.shapeDescription}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, shapeDescription: e.target.value })
+                }
+              />
+              <label className="text-sm font-semibold mt-2">Draw Shape:</label>
+              <div className="border rounded-md shadow-sm overflow-hidden">
+                <ReactSketchCanvas
+                  ref={canvasRef}
+                  width="100%"
+                  height="350px"
+                  strokeWidth={3}
+                  strokeColor="black"
+                />
+              </div>
+
+              <div className="flex justify-between mt-3">
+                <button
+                  onClick={() => canvasRef.current.clearCanvas()}
+                  className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={saveCanva}
+                  className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  Save Shape
+                </button>
+              </div>
+            </div>
           ) : null}
           <div className="flex justify-between mt-4">
             <button

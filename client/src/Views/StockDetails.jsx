@@ -52,7 +52,7 @@ const StockDetails = () => {
             </h2>
             <div
               className="absolute top-10 right-1.5 bg-red-600 hover:bg-red-500 text-white font-semibold p-2.5 rounded-xl shadow-md transition-all duration-200"
-              onClick={(e) => {
+              onClick={() => {
                 deletesheet();
               }}
             >
@@ -83,6 +83,32 @@ const StockDetails = () => {
                 <span className="font-semibold text-gray-900">Company:</span>{" "}
                 {stockData.companyname}
               </p>
+              {stockData?.sheetType === "remnant" ? (
+                <div className="col-span-1 sm:col-span-2">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
+                    <div className="flex-1">
+                      <p className="text-gray-700">
+                        <span className="font-semibold text-gray-900">
+                          Shape Description:
+                        </span>{" "}
+                        {stockData.shapeDescription || "—"}
+                      </p>
+                    </div>
+                    {stockData.sheetCanvas ? (
+                      <img
+                        src={stockData.sheetCanvas}
+                        alt="Sheet Canvas"
+                        className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
+                      />
+                    ) : (
+                      <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                        No Preview
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+
               <p className="col-span-1 sm:col-span-2">
                 <span className="font-semibold text-gray-900">Added By:</span>{" "}
                 {stockData.addedBy?.name} ({stockData.addedBy?.email})

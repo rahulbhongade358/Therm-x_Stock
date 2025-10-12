@@ -12,6 +12,7 @@ const postStocks = async (req, res) => {
     companyname,
     addedBy,
     remarks,
+    sheetCanvas,
   } = req.body;
   const newStock = new Stock({
     sheetType,
@@ -23,6 +24,7 @@ const postStocks = async (req, res) => {
     companyname,
     addedBy,
     remarks,
+    sheetCanvas,
   });
   const saveStock = await newStock.save();
 

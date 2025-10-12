@@ -17,7 +17,7 @@ const stockSchema = new Schema(
 
     approxArea: { type: String },
     shapeDescription: { type: String },
-    photo: { type: String },
+    sheetCanvas: { type: String },
   },
   { timestamps: true }
 );
