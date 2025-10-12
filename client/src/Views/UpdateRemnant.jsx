@@ -11,7 +11,6 @@ function UpdateRemnant() {
     thickness: "",
     size: "",
     quantity: "",
-    minRequired: "",
     remarks: "",
     addedBy: "",
     companyname: "",
@@ -80,7 +79,6 @@ function UpdateRemnant() {
             { label: "Thickness (mm)", key: "thickness", type: "number" },
             { label: "Size (mm × mm)", key: "size", type: "text" },
             { label: "Quantity", key: "quantity", type: "number" },
-            { label: "Min Required", key: "minRequired", type: "number" },
             { label: "Remarks", key: "remarks", type: "text" },
             { label: "Company Name", key: "companyname", type: "text" },
             {

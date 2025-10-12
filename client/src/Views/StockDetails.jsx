@@ -75,12 +75,6 @@ const StockDetails = () => {
                 <span className="font-semibold text-gray-900">Sheet Type:</span>{" "}
                 {stockData.sheetType}
               </p>
-              <p>
-                <span className="font-semibold text-gray-900">
-                  Min Required:
-                </span>{" "}
-                {stockData.minRequired}
-              </p>
               <p className="col-span-1 sm:col-span-2">
                 <span className="font-semibold text-gray-900">Remarks:</span>{" "}
                 {stockData.remarks || "—"}

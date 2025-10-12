@@ -9,7 +9,6 @@ function AddStockModal({ onClose }) {
     thickness: "",
     size: "",
     quantity: "",
-    minRequired: "",
     remarks: "",
     addedBy: "",
     companyname: "",
@@ -72,15 +71,6 @@ function AddStockModal({ onClose }) {
             value={newStock.quantity}
             onChange={(e) =>
               setNewStock({ ...newStock, quantity: e.target.value })
-            }
-          />
-          <input
-            type="number"
-            placeholder="Minimum Required"
-            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.minRequired}
-            onChange={(e) =>
-              setNewStock({ ...newStock, minRequired: e.target.value })
             }
           />
 

@@ -7,7 +7,6 @@ const postStocks = async (req, res) => {
     thickness,
     size,
     quantity,
-    minRequired,
     approxArea,
     shapeDescription,
     companyname,
@@ -19,7 +18,6 @@ const postStocks = async (req, res) => {
     thickness,
     size,
     quantity,
-    minRequired,
     approxArea,
     shapeDescription,
     companyname,
@@ -116,7 +114,6 @@ const putStocksbyID = async (req, res) => {
     thickness,
     size,
     quantity,
-    minRequired,
     remarks,
     addedBy,
     companyname,
@@ -133,7 +130,6 @@ const putStocksbyID = async (req, res) => {
     !thickness ||
     !size ||
     !quantity ||
-    !minRequired ||
     !remarks ||
     !addedBy ||
     !companyname
@@ -149,7 +145,6 @@ const putStocksbyID = async (req, res) => {
       thickness,
       size,
       quantity,
-      minRequired,
       remarks,
       addedBy,
       companyname,
