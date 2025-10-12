@@ -44,6 +44,8 @@ function Dashboard() {
     },
     { title: "Managed By", value: "Therm-X Team", color: "bg-yellow-500" },
   ];
+  const limitedStocksItems = stocks.slice(0, 4);
+  const limitedRemnantItems = remnantstocks.slice(0, 4);
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
@@ -99,81 +101,63 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody className="text-gray-700">
-                {stocks.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="7"
-                      className="text-center py-6 text-gray-500 italic"
-                    >
-                      No stock data available.
-                    </td>
-                  </tr>
-                ) : (
-                  stocks.map((s) => (
-                    <tr
-                      key={s._id}
-                      className={`border-b transition-all duration-150 hover:bg-gray-50`}
-                    >
-                      <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                      <td className="px-3 sm:px-4 py-2">{s.size}</td>
-                      <td className="px-3 sm:px-4 py-2 font-semibold">
-                        {s.quantity}
-                      </td>
-                      <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                        {s.lastUpdated
-                          ? new Date(s.lastUpdated).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })
-                          : "—"}
-                      </td>
+                {stocks.length === 0
+                  ? null
+                  : limitedStocksItems.map((s) => (
+                      <tr
+                        key={s._id}
+                        className={`border-b transition-all duration-150 hover:bg-gray-50`}
+                      >
+                        <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
+                        <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                        <td className="px-3 sm:px-4 py-2 font-semibold">
+                          {s.quantity}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                          {s.lastUpdated
+                            ? new Date(s.lastUpdated).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                            : "—"}
+                        </td>
 
-                      <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                    </tr>
-                  ))
-                )}
+                        <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
+                      </tr>
+                    ))}
               </tbody>
               <tbody className="text-gray-700">
-                {remnantstocks.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className="text-center py-6 text-gray-500 italic"
-                    >
-                      No remnant stock data available.
-                    </td>
-                  </tr>
-                ) : (
-                  remnantstocks.map((s) => (
-                    <tr
-                      key={s._id}
-                      className={`border-b transition-all duration-150 hover:bg-gray-50`}
-                    >
-                      <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                      <td className="px-3 sm:px-4 py-2">{s.size}</td>
-                      <td className="px-3 sm:px-4 py-2 font-semibold">
-                        {s.quantity}
-                      </td>
-                      <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                        {s.lastUpdated
-                          ? new Date(s.lastUpdated).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            })
-                          : "—"}
-                      </td>
-                      <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                    </tr>
-                  ))
-                )}
+                {remnantstocks.length === 0
+                  ? null
+                  : limitedRemnantItems.map((s) => (
+                      <tr
+                        key={s._id}
+                        className={`border-b transition-all duration-150 hover:bg-gray-50`}
+                      >
+                        <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
+                        <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                        <td className="px-3 sm:px-4 py-2 font-semibold">
+                          {s.quantity}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                          {s.lastUpdated
+                            ? new Date(s.lastUpdated).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                            : "—"}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
             <div className="mt-4 rounded-2xl shadow-md text-white bg-indigo-500 w-fit p-4 font-medium text-sm sm:text-base transition transform hover:scale-105">
