@@ -35,11 +35,12 @@ const postStocks = async (req, res) => {
   });
 };
 const getStocks = async (req, res) => {
-  const stocks = await Stock.find().populate("addedBy", "_id name email");
-  const remnantstock = await RemnantStock.find().populate(
-    "orignalsheetid",
-    "_id quantity"
-  );
+  const stocks = await Stock.find()
+    .populate("addedBy", "_id name email")
+    .sort({ thickness: 1, updatedAt: -1 });
+  const remnantstock = await RemnantStock.find()
+    .populate("orignalsheetid", "_id quantity")
+    .sort({ thickness: 1, updatedAt: -1 });
 
   res.status(200).json({
     success: true,

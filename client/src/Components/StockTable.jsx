@@ -185,7 +185,7 @@ function StockTable() {
             )}
           </tbody>
 
-          <tbody className="text-gray-700 divide-y">
+          <tbody className="text-gray-700 divide-y ">
             {remnantstocks.length === 0 ? (
               <tr>
                 <td
