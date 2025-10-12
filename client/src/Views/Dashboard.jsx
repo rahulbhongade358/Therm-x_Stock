@@ -42,11 +42,6 @@ function Dashboard() {
       value: totalRemnantCount,
       color: "bg-green-500",
     },
-    {
-      title: "Low Stock Items",
-      value: stocks.filter((s) => s.quantity < 1).length,
-      color: "bg-red-500",
-    },
     { title: "Managed By", value: "Therm-X Team", color: "bg-yellow-500" },
   ];
 
@@ -99,9 +94,7 @@ function Dashboard() {
                   <th className="px-3 sm:px-4 py-2 text-left">Thickness</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Size</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Quantity</th>
-                  <th className="px-3 sm:px-4 py-2 text-left">Min Required</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Last Updated</th>
-                  <th className="px-3 sm:px-4 py-2 text-left">Remarks</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Company</th>
                 </tr>
               </thead>
@@ -119,16 +112,13 @@ function Dashboard() {
                   stocks.map((s) => (
                     <tr
                       key={s._id}
-                      className={`border-b transition-all duration-150 hover:bg-gray-50 ${
-                        s.quantity < 3 ? "bg-red-50" : ""
-                      }`}
+                      className={`border-b transition-all duration-150 hover:bg-gray-50`}
                     >
                       <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
                       <td className="px-3 sm:px-4 py-2">{s.size}</td>
                       <td className="px-3 sm:px-4 py-2 font-semibold">
                         {s.quantity}
                       </td>
-                      <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
                       <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
                         {s.lastUpdated
                           ? new Date(s.lastUpdated).toLocaleString("en-IN", {
@@ -141,17 +131,7 @@ function Dashboard() {
                             })
                           : "—"}
                       </td>
-                      <td className="px-3 sm:px-4 py-2">
-                        {s.quantity < 1 ? (
-                          <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                            ⚠ Low Stock
-                          </span>
-                        ) : (
-                          <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                            OK
-                          </span>
-                        )}
-                      </td>
+
                       <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
                     </tr>
                   ))
@@ -171,16 +151,13 @@ function Dashboard() {
                   remnantstocks.map((s) => (
                     <tr
                       key={s._id}
-                      className={`border-b transition-all duration-150 hover:bg-gray-50 ${
-                        s.quantity < s.minRequired ? "bg-red-50" : ""
-                      }`}
+                      className={`border-b transition-all duration-150 hover:bg-gray-50`}
                     >
                       <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
                       <td className="px-3 sm:px-4 py-2">{s.size}</td>
                       <td className="px-3 sm:px-4 py-2 font-semibold">
                         {s.quantity}
                       </td>
-                      <td className="px-3 sm:px-4 py-2">{s.minRequired}</td>
                       <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
                         {s.lastUpdated
                           ? new Date(s.lastUpdated).toLocaleString("en-IN", {
@@ -192,18 +169,6 @@ function Dashboard() {
                               hour12: true,
                             })
                           : "—"}
-                      </td>
-
-                      <td className="px-3 sm:px-4 py-2">
-                        {s.quantity < s.minRequired ? (
-                          <span className="bg-red-100 text-red-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                            ⚠ Low Stock
-                          </span>
-                        ) : (
-                          <span className="bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                            OK
-                          </span>
-                        )}
                       </td>
                       <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
                     </tr>
