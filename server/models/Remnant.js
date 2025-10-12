@@ -20,7 +20,7 @@ const newRemnant = new Schema(
       required: true,
     },
     shapeDescription: { type: String },
-    photo: { type: String },
+    sheetCanvas: { type: String },
   },
   { timestamps: true }
 );

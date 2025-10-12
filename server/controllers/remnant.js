@@ -11,6 +11,7 @@ const postRemnantStocks = async (req, res) => {
     orignalsheetid,
     sheetType = "remnant",
     remarks,
+    sheetCanvas,
   } = req.body;
   const newRemnantStock = new RemnantStock({
     thickness,
@@ -23,6 +24,7 @@ const postRemnantStocks = async (req, res) => {
     minRequired: 1,
     sheetType,
     quantity: 1,
+    sheetCanvas,
   });
   const saveRemnantStock = await newRemnantStock.save();
 

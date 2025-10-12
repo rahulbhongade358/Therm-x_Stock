@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { getCurrentuser } from "../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
 import Select from "react-select";
 import axios from "axios";
+import { ReactSketchCanvas } from "react-sketch-canvas";
 function AddStockRemnantModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [sheetOptions, setSheetOptions] = useState([]);
@@ -15,7 +16,14 @@ function AddStockRemnantModal({ onClose }) {
     addedBy: "",
     companyname: "",
     shapeDescription: "",
+    sheetCanvas: "",
   });
+  const canvasRef = useRef(null);
+  const saveCanva = async () => {
+    const canvaData = await canvasRef.current.exportImage("png");
+    setNewStock((prev) => ({ ...prev, sheetCanvas: canvaData }));
+    toast.success("Shape Saved Successfully");
+  };
   const addstock = async () => {
     try {
       const payload = { ...newStock, addedBy: user?._id };
@@ -68,7 +76,6 @@ function AddStockRemnantModal({ onClose }) {
           </p>
         </div>
         <div className="flex flex-col gap-3">
-          {/* Replace only this part in your existing modal */}
           <label className="block text-gray-700 font-medium mb-2">
             Select Original Sheet
           </label>
@@ -129,6 +136,31 @@ function AddStockRemnantModal({ onClose }) {
               setNewStock({ ...newStock, shapeDescription: e.target.value })
             }
           />
+          <label className="text-sm font-semibold mt-2">Draw Shape:</label>
+          <div className="border rounded-md shadow-sm overflow-hidden">
+            <ReactSketchCanvas
+              ref={canvasRef}
+              width="100%"
+              height="250px"
+              strokeWidth={3}
+              strokeColor="black"
+            />
+          </div>
+
+          <div className="flex justify-between mt-3">
+            <button
+              onClick={() => canvasRef.current.clearCanvas()}
+              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Clear
+            </button>
+            <button
+              onClick={saveCanva}
+              className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Save Shape
+            </button>
+          </div>
           <div className="flex justify-between mt-4">
             <button
               type="button"

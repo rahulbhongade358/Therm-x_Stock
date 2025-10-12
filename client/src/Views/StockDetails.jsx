@@ -143,6 +143,11 @@ const StockDetails = () => {
                 <span className="font-semibold text-gray-900">Added By:</span>{" "}
                 {remnantData.addedBy?.name} ({remnantData.addedBy?.email})
               </p>
+              <img
+                src={remnantData.sheetCanvas}
+                alt="sheetCanvas"
+                className="w-48 h-32 border rounded-2xl shadow"
+              />
             </div>
           </div>
         ) : null}
