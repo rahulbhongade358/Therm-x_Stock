@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useParams } from "react-router";
 import { getCurrentuser } from "../utils/utils";
+import { ReactSketchCanvas } from "react-sketch-canvas";
 function UpdateRemnant() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -15,8 +16,14 @@ function UpdateRemnant() {
     addedBy: "",
     companyname: "",
     shapeDescription: "",
+    sheetCanvas: "",
   });
-
+  const canvasRef = useRef(null);
+  const saveCanva = async () => {
+    const canvaData = await canvasRef.current.exportImage("png");
+    setUpdateRemnantStock((prev) => ({ ...prev, sheetCanvas: canvaData }));
+    toast.success("Shape Saved Successfully");
+  };
   const updateremnant = async () => {
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/remnantstocks/${id}`
@@ -103,6 +110,31 @@ function UpdateRemnant() {
               />
             </div>
           ))}
+          <label className="text-sm font-semibold mt-2">Draw Shape:</label>
+          <div className="border rounded-md shadow-sm overflow-hidden">
+            <ReactSketchCanvas
+              ref={canvasRef}
+              width="100%"
+              height="250px"
+              strokeWidth={3}
+              strokeColor="black"
+            />
+          </div>
+
+          <div className="flex justify-between mt-3">
+            <button
+              onClick={() => canvasRef.current.clearCanvas()}
+              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Clear
+            </button>
+            <button
+              onClick={saveCanva}
+              className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Save Shape
+            </button>
+          </div>
         </div>
 
         {/* Footer */}

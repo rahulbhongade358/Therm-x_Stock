@@ -86,6 +86,7 @@ const putRemnantStocksbyID = async (req, res) => {
     addedBy,
     companyname,
     shapeDescription,
+    sheetCanvas,
   } = req.body;
   const existingStock = await RemnantStock.findOne({ _id: ID });
   if (!existingStock) {
@@ -106,6 +107,7 @@ const putRemnantStocksbyID = async (req, res) => {
       companyname,
       shapeDescription,
       sheetType: "remnant",
+      sheetCanvas,
     }
   );
   return res.status(200).json({
