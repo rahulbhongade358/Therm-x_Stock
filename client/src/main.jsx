@@ -10,6 +10,7 @@ import StockTable from "./Components/StockTable.jsx";
 import Update from "./Views/Update.jsx";
 import UpdateRemnant from "./Views/UpdateRemnant.jsx";
 import StockDetails from "./Views/StockDetails.jsx";
+import Canvas from "./Components/Canvas/Canvas.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Router>
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="/update/:id" element={<Update />} />
       <Route path="/updateremnant/:id" element={<UpdateRemnant />} />
       <Route path="/stockdetails/:id" element={<StockDetails />} />
+      <Route path="/canvas" element={<Canvas />} />
     </Routes>
   </Router>
 );
