@@ -5,7 +5,7 @@ import axios from "axios";
 
 const StockDetails = () => {
   const { id } = useParams();
-
+  const [zoom, setZoom] = useState(false);
   const [stockData, setStockData] = useState(null);
   const [remnantData, setRemnantData] = useState(null);
 
@@ -32,6 +32,10 @@ const StockDetails = () => {
       toast.success("sheet deleted successfully");
       fetchData();
     }
+  };
+  const zoomCanva = () => {
+    setZoom(!zoom);
+    console.log(zoom);
   };
   useEffect(() => {
     fetchData();
@@ -95,11 +99,19 @@ const StockDetails = () => {
                       </p>
                     </div>
                     {stockData.sheetCanvas ? (
-                      <img
-                        src={stockData.sheetCanvas}
-                        alt="Sheet Canvas"
-                        className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
-                      />
+                      <div>
+                        <img
+                          src={stockData.sheetCanvas}
+                          alt="Sheet Canvas"
+                          className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
+                        />
+                        <button
+                          onClick={zoomCanva}
+                          className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition-all duration-200"
+                        >
+                          🔍 Zoom
+                        </button>
+                      </div>
                     ) : (
                       <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
                         No Preview
@@ -108,6 +120,23 @@ const StockDetails = () => {
                   </div>
                 </div>
               ) : null}
+              {zoom && (
+                <div className="fixed inset-0 bg-gray-400 bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+                  <div className="relative">
+                    <img
+                      src={stockData.sheetCanvas}
+                      alt="Zoomed Sheet Canvas"
+                      className="max-w-[90vw] max-h-[100vh] rounded-xl shadow-2xl transform scale-100 transition-transform duration-300"
+                    />
+                    <button
+                      onClick={() => setZoom(false)}
+                      className="absolute top-2 right-2 bg-white hover:bg-gray-200 text-gray-800 font-semibold px-3 py-1 rounded-lg shadow-md transition-all duration-200"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <p className="col-span-1 sm:col-span-2">
                 <span className="font-semibold text-gray-900">Added By:</span>{" "}

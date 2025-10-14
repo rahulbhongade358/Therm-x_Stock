@@ -3,7 +3,7 @@ import { getCurrentuser } from "../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
 import Select from "react-select";
 import axios from "axios";
-import { ReactSketchCanvas } from "react-sketch-canvas";
+import { Link } from "react-router";
 function AddStockRemnantModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [sheetOptions, setSheetOptions] = useState([]);
@@ -18,21 +18,25 @@ function AddStockRemnantModal({ onClose }) {
     shapeDescription: "",
     sheetCanvas: "",
   });
-  const canvasRef = useRef(null);
-  const saveCanva = async () => {
-    const canvaData = await canvasRef.current.exportImage("png");
-    setNewStock((prev) => ({ ...prev, sheetCanvas: canvaData }));
-    toast.success("Shape Saved Successfully");
-  };
+  let canvaData = localStorage.getItem("sheetCanvas");
+
   const addstock = async () => {
     try {
-      const payload = { ...newStock, addedBy: user?._id };
+      const sheetData = localStorage.getItem("newStockForm");
+      const restoredStock = sheetData ? JSON.parse(sheetData) : newStock;
+      const payload = {
+        ...restoredStock,
+        sheetCanvas: canvaData,
+        addedBy: user?._id,
+      };
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/remnantstocks`,
         payload
       );
       if (response?.data?.success) {
         toast.success(response.data.message);
+        localStorage.removeItem("sheetCanvas");
+        localStorage.removeItem("newStockForm");
         setTimeout(() => {
           window.location.href = "/";
         }, 2000);
@@ -60,6 +64,10 @@ function AddStockRemnantModal({ onClose }) {
   useEffect(() => {
     setUser(getCurrentuser());
     fetchSheets();
+    const savedForm = localStorage.getItem("newStockForm");
+    if (savedForm) {
+      setNewStock(JSON.parse(savedForm));
+    }
   }, []);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -137,30 +145,31 @@ function AddStockRemnantModal({ onClose }) {
             }
           />
           <label className="text-sm font-semibold mt-2">Draw Shape:</label>
-          <div className="border rounded-md shadow-sm overflow-hidden">
-            <ReactSketchCanvas
-              ref={canvasRef}
-              width="100%"
-              height="250px"
-              strokeWidth={3}
-              strokeColor="black"
-            />
+          <div className="max-w-4xl mx-auto p-4">
+            <Link
+              to="/canvas"
+              onClick={() =>
+                localStorage.setItem("newStockForm", JSON.stringify(newStock))
+              }
+            >
+              Draw Shape
+            </Link>
+          </div>
+          <div>
+            <h2>Preview:</h2>
+            {canvaData ? (
+              <img
+                src={canvaData}
+                alt="Sheet Canvas"
+                className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
+              />
+            ) : (
+              <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                No Preview
+              </div>
+            )}
           </div>
 
-          <div className="flex justify-between mt-3">
-            <button
-              onClick={() => canvasRef.current.clearCanvas()}
-              className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Clear
-            </button>
-            <button
-              onClick={saveCanva}
-              className="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Save Shape
-            </button>
-          </div>
           <div className="flex justify-between mt-4">
             <button
               type="button"
