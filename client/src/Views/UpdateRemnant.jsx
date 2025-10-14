@@ -3,7 +3,6 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { Link, useParams } from "react-router";
 import { getCurrentuser } from "../utils/utils";
-import { ReactSketchCanvas } from "react-sketch-canvas";
 function UpdateRemnant() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -17,7 +16,7 @@ function UpdateRemnant() {
     shapeDescription: "",
     sheetCanvas: "",
   });
-  let canvaData = localStorage.getItem("sheetCanvas");
+  let updateRemnantCanvaData = localStorage.getItem("updateRemnantSheetCanvas");
 
   const updateremnant = async () => {
     const response = await axios.get(
@@ -30,13 +29,13 @@ function UpdateRemnant() {
   }, [id]);
   const updateremnantstock = async () => {
     try {
-      const sheetData = localStorage.getItem("newStockForm");
-      const restoredStock = sheetData
-        ? JSON.parse(sheetData)
+      const updateRemnant = localStorage.getItem("updateRemnantStockForm");
+      const restoredStock = updateRemnant
+        ? JSON.parse(updateRemnant)
         : updateRemnantStock;
       const payload = {
         ...restoredStock,
-        sheetCanvas: canvaData,
+        sheetCanvas: updateRemnantCanvaData,
         addedBy: user?._id,
       };
 
@@ -47,8 +46,8 @@ function UpdateRemnant() {
 
       if (response?.data?.success) {
         toast.success(response.data.message);
-        localStorage.removeItem("sheetCanvas");
-        localStorage.removeItem("newStockForm");
+        localStorage.removeItem("updateRemnantSheetCanvas");
+        localStorage.removeItem("updateRemnantStockForm");
         setTimeout(() => {
           window.location.href = "/";
         }, 2000);
@@ -121,10 +120,10 @@ function UpdateRemnant() {
           <label className="text-sm font-semibold mt-2">Draw Shape:</label>
           <div className="max-w-4xl mx-auto p-4">
             <Link
-              to="/canvas"
+              to={`/updateremnantcanvas/${id}`}
               onClick={() =>
                 localStorage.setItem(
-                  "newStockForm",
+                  "updateRemnantStockForm",
                   JSON.stringify(updateRemnantStock)
                 )
               }
@@ -134,9 +133,9 @@ function UpdateRemnant() {
           </div>
           <div>
             <h2>Preview:</h2>
-            {updateRemnantStock?.sheetCanvas || canvaData ? (
+            {updateRemnantCanvaData ? (
               <img
-                src={canvaData || updateRemnantStock.sheetCanvas}
+                src={updateRemnantCanvaData}
                 alt="Sheet Canvas"
                 className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
               />

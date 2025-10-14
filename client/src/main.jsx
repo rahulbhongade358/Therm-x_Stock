@@ -13,6 +13,7 @@ import StockDetails from "./Views/StockDetails.jsx";
 import Canvas from "./Components/Canvas/Canvas.jsx";
 import AddRemnantStockModal from "./Components/AddRemnantStockModal .jsx";
 import RemnantCanvas from "./Components/Canvas/RemnantCanvas.jsx";
+import UpdateRemnantCanvas from "./Components/Canvas/UpdateRemnantCanvas.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Router>
@@ -28,6 +29,10 @@ createRoot(document.getElementById("root")).render(
       <Route path="/stockdetails/:id" element={<StockDetails />} />
       <Route path="/canvas" element={<Canvas />} />
       <Route path="/remnantcanvas" element={<RemnantCanvas />} />
+      <Route
+        path="/updateremnantcanvas/:id"
+        element={<UpdateRemnantCanvas />}
+      />
     </Routes>
   </Router>
 );
