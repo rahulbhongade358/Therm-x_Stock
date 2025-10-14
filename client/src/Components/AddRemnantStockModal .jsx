@@ -4,10 +4,10 @@ import toast, { Toaster } from "react-hot-toast";
 import Select from "react-select";
 import axios from "axios";
 import { Link } from "react-router";
-function AddStockRemnantModal({ onClose }) {
+function AddRemnantStockModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [sheetOptions, setSheetOptions] = useState([]);
-  const [newStock, setNewStock] = useState({
+  const [remnantStock, setRemnantStock] = useState({
     sheetType: "remnant",
     thickness: "",
     size: "",
@@ -18,15 +18,15 @@ function AddStockRemnantModal({ onClose }) {
     shapeDescription: "",
     sheetCanvas: "",
   });
-  let canvaData = localStorage.getItem("sheetCanvas");
+  let remnantCanvasData = localStorage.getItem("remnantSheetCanvas");
 
   const addstock = async () => {
     try {
-      const sheetData = localStorage.getItem("newStockForm");
-      const restoredStock = sheetData ? JSON.parse(sheetData) : newStock;
+      const sheetData = localStorage.getItem("RemnantStockForm");
+      const restoredStock = sheetData ? JSON.parse(sheetData) : remnantStock;
       const payload = {
         ...restoredStock,
-        sheetCanvas: canvaData,
+        sheetCanvas: remnantCanvasData,
         addedBy: user?._id,
       };
       const response = await axios.post(
@@ -35,8 +35,8 @@ function AddStockRemnantModal({ onClose }) {
       );
       if (response?.data?.success) {
         toast.success(response.data.message);
-        localStorage.removeItem("sheetCanvas");
-        localStorage.removeItem("newStockForm");
+        localStorage.removeItem("remnantSheetCanvas");
+        localStorage.removeItem("RemnantStockForm");
         setTimeout(() => {
           window.location.href = "/";
         }, 2000);
@@ -64,9 +64,9 @@ function AddStockRemnantModal({ onClose }) {
   useEffect(() => {
     setUser(getCurrentuser());
     fetchSheets();
-    const savedForm = localStorage.getItem("newStockForm");
-    if (savedForm) {
-      setNewStock(JSON.parse(savedForm));
+    const remnantForm = localStorage.getItem("RemnantStockForm");
+    if (remnantForm) {
+      setRemnantStock(JSON.parse(remnantForm));
     }
   }, []);
   return (
@@ -91,11 +91,14 @@ function AddStockRemnantModal({ onClose }) {
             options={sheetOptions}
             value={
               sheetOptions.find(
-                (opt) => opt.value === newStock.orignalsheetid
+                (opt) => opt.value === remnantStock.orignalsheetid
               ) || null
             }
             onChange={(selected) =>
-              setNewStock({ ...newStock, orignalsheetid: selected.value })
+              setRemnantStock({
+                ...remnantStock,
+                orignalsheetid: selected.value,
+              })
             }
             placeholder="Search or select original sheet..."
             isSearchable
@@ -104,52 +107,60 @@ function AddStockRemnantModal({ onClose }) {
             type="number"
             placeholder="Thickness (mm)"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.thickness}
+            value={remnantStock.thickness}
             onChange={(e) =>
-              setNewStock({ ...newStock, thickness: e.target.value })
+              setRemnantStock({ ...remnantStock, thickness: e.target.value })
             }
           />
           <input
             type="text"
             placeholder="Size (mm x mm)"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.size}
-            onChange={(e) => setNewStock({ ...newStock, size: e.target.value })}
+            value={remnantStock.size}
+            onChange={(e) =>
+              setRemnantStock({ ...remnantStock, size: e.target.value })
+            }
           />
 
           <input
             type="text"
             placeholder="Company Name"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.companyname}
+            value={remnantStock.companyname}
             onChange={(e) =>
-              setNewStock({ ...newStock, companyname: e.target.value })
+              setRemnantStock({ ...remnantStock, companyname: e.target.value })
             }
           />
           <input
             type="text"
             placeholder="Remarks"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.remarks}
+            value={remnantStock.remarks}
             onChange={(e) =>
-              setNewStock({ ...newStock, remarks: e.target.value })
+              setRemnantStock({ ...remnantStock, remarks: e.target.value })
             }
           />
           <input
             type="text"
             placeholder="Shape Description"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.shapeDescription}
+            value={remnantStock.shapeDescription}
             onChange={(e) =>
-              setNewStock({ ...newStock, shapeDescription: e.target.value })
+              setRemnantStock({
+                ...remnantStock,
+                shapeDescription: e.target.value,
+              })
             }
           />
           <label className="text-sm font-semibold mt-2">Draw Shape:</label>
           <div className="max-w-4xl mx-auto p-4">
             <Link
-              to="/canvas"
+              to="/remnantcanvas"
               onClick={() =>
-                localStorage.setItem("newStockForm", JSON.stringify(newStock))
+                localStorage.setItem(
+                  "RemnantStockForm",
+                  JSON.stringify(remnantStock)
+                )
               }
             >
               Draw Shape
@@ -157,9 +168,9 @@ function AddStockRemnantModal({ onClose }) {
           </div>
           <div>
             <h2>Preview:</h2>
-            {canvaData ? (
+            {remnantCanvasData ? (
               <img
-                src={canvaData}
+                src={remnantCanvasData}
                 alt="Sheet Canvas"
                 className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
               />
@@ -192,4 +203,4 @@ function AddStockRemnantModal({ onClose }) {
   );
 }
 
-export default AddStockRemnantModal;
+export default AddRemnantStockModal;

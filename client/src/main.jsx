@@ -11,6 +11,8 @@ import Update from "./Views/Update.jsx";
 import UpdateRemnant from "./Views/UpdateRemnant.jsx";
 import StockDetails from "./Views/StockDetails.jsx";
 import Canvas from "./Components/Canvas/Canvas.jsx";
+import AddRemnantStockModal from "./Components/AddRemnantStockModal .jsx";
+import RemnantCanvas from "./Components/Canvas/RemnantCanvas.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Router>
@@ -19,11 +21,13 @@ createRoot(document.getElementById("root")).render(
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signin />} />
       <Route path="/addstocks" element={<AddStockModal />} />
+      <Route path="/addremnantstocks" element={<AddRemnantStockModal />} />
       <Route path="/allstocks" element={<StockTable />} />
       <Route path="/update/:id" element={<Update />} />
       <Route path="/updateremnant/:id" element={<UpdateRemnant />} />
       <Route path="/stockdetails/:id" element={<StockDetails />} />
       <Route path="/canvas" element={<Canvas />} />
+      <Route path="/remnantcanvas" element={<RemnantCanvas />} />
     </Routes>
   </Router>
 );

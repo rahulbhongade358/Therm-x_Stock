@@ -14,6 +14,8 @@ function StockTable() {
     );
     setStocks(response.data.data);
     setRemnantStocks(response.data.remnantstock);
+    console.log(response.data.remnantstock);
+    console.log(response.data.data);
   };
   const searchStock = async () => {
     toast.loading("🔎 Searching for stocks...", { id: "searching" });

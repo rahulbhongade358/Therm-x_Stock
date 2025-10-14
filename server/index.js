@@ -15,6 +15,7 @@ import {
   postRemnantStocks,
   putRemnantStocksbyID,
   getRemnantStocksbyID,
+  getRemnantStock,
 } from "./controllers/remnant.js";
 dotenv.config();
 const app = express();
@@ -53,6 +54,7 @@ app.post("/signin", postSignin);
 app.post("/stocks", postStocks);
 app.post("/remnantstocks", postRemnantStocks);
 app.get("/allstocks", getStocks);
+app.get("/remnantstocks", getRemnantStock);
 app.get("/stocks/search", getStockbySearch);
 app.get("/stocks/:ID", getStocksbyID);
 app.get("/remnantstocks/:ID", getRemnantStocksbyID);

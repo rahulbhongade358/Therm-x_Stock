@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../Components/Sidebar";
 import Navbar from "../Components/Navbar";
 import AddStockModal from "../Components/AddStockModal";
-import AddStockRemnantModal from "./../Components/AddRemnantStockModal ";
+import AddStockRemnantModal from "../Components/AddRemnantStockModal ";
 import axios from "axios";
 
 import { getCurrentuser } from "../utils/utils";

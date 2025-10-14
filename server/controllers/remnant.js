@@ -9,7 +9,6 @@ const postRemnantStocks = async (req, res) => {
     companyname,
     addedBy,
     orignalsheetid,
-    sheetType = "remnant",
     remarks,
     sheetCanvas,
   } = req.body;
@@ -21,7 +20,7 @@ const postRemnantStocks = async (req, res) => {
     addedBy,
     orignalsheetid,
     remarks,
-    sheetType,
+    sheetType: "remnant",
     quantity: 1,
     sheetCanvas,
   });
@@ -118,8 +117,7 @@ const getRemnantStocksbyID = async (req, res) => {
 
   const response = await RemnantStock.findById(ID)
     .populate("orignalsheetid", "quantity _id size")
-    .populate("addedBy", "_id name email")
-    ;
+    .populate("addedBy", "_id name email");
   try {
     if (response) {
       res.status(201).json({
@@ -141,5 +139,21 @@ const getRemnantStocksbyID = async (req, res) => {
     });
   }
 };
+const getRemnantStock = async (req, res) => {
+  const remnantstock = await RemnantStock.find()
+    .populate("orignalsheetid", "_id quantity")
+    .populate("addedBy", "_id name email")
+    .sort({ thickness: 1, updatedAt: -1 });
+  res.json({
+    success: true,
+    data: remnantstock,
+    message: `${remnantstock.length} Stocks fetched successfully`,
+  });
+};
 
-export { postRemnantStocks, putRemnantStocksbyID, getRemnantStocksbyID };
+export {
+  postRemnantStocks,
+  putRemnantStocksbyID,
+  getRemnantStocksbyID,
+  getRemnantStock,
+};
