@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getCurrentuser } from "../utils/utils.js";
 import { Link } from "react-router";
+import { jsPDF } from "jspdf";
+import { autoTable } from "jspdf-autotable";
 import toast, { Toaster } from "react-hot-toast";
 function StockTable() {
   const [logginUser, setLogginUser] = useState(null);
@@ -47,6 +49,37 @@ function StockTable() {
     Stocks();
   }, [logginUser]);
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Stock Report", 14, 15);
+
+    const allData = [...stocks, ...remnantstocks].map((s) => [
+      s.thickness,
+      s.size,
+      s.quantity,
+      s.companyname,
+      s.sheetType,
+      s.lastUpdated ? new Date(s.lastUpdated).toLocaleString("en-IN") : "—",
+    ]);
+
+    autoTable(doc, {
+      head: [
+        [
+          "Thickness (mm)",
+          "Size",
+          "Quantity",
+          "Company",
+          "Type",
+          "Last Updated",
+        ],
+      ],
+      body: allData,
+      startY: 25,
+    });
+
+    doc.save("Stock_Report.pdf");
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mx-4 sm:mx-6 mb-8">
       <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">
@@ -70,6 +103,12 @@ function StockTable() {
             </button>
           )}
         </div>
+        <button
+          onClick={exportToPDF}
+          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+        >
+          📄 Download Pdf
+        </button>
       </div>
       <div className="w-full overflow-x-auto">
         <table className="w-full min-w-[900px] border border-gray-200 rounded-lg overflow-hidden text-sm sm:text-base table-auto">

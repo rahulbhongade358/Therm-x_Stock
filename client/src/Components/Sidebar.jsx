@@ -1,46 +1,101 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getCurrentuser } from "./../utils/utils.js";
+import { Menu, X } from "lucide-react";
+
 function Sidebar() {
   const [user, setUser] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setUser(getCurrentuser());
   }, []);
+
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col p-5 shadow-lg">
-      <h1 className="text-3xl font-extrabold mb-10 text-center tracking-wide">
-        Therm-X
-      </h1>
-      <nav className="flex flex-col gap-3">
-        <Link to="/allstocks">
-          <button className="w-full text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
-            Stocks
-          </button>
-        </Link>
-        <button className="text-left hover:bg-gray-800 p-3 rounded-lg transition-colors duration-200">
-          Reports
-        </button>
-        {user ? (
+    <div className="flex justify-between items-center px-4 md:px-10 h-[60px]">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg">
+        <div className="flex justify-between items-center px-6 py-4">
+          <h1 className="text-3xl font-extrabold tracking-wider text-white  drop-shadow-md">
+            Therm-<span className="text-red-700 italic">X</span>
+          </h1>
+          <div className="hidden md:flex items-center gap-6 text-lg font-medium">
+            <Link to="/allstocks">
+              <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200">
+                📦 <span>Stocks</span>
+              </button>
+            </Link>
+
+            <Link to="/reports">
+              <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200">
+                📊 <span>Reports</span>
+              </button>
+            </Link>
+
+            {user ? (
+              <button
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/";
+                }}
+                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200"
+              >
+                🚪 <span>Logout</span>
+              </button>
+            ) : (
+              <Link to="/login">
+                <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200">
+                  🔐 <span>Login</span>
+                </button>
+              </Link>
+            )}
+          </div>
           <button
-            className="w-full text-left hover:bg-red-600 p-3 rounded-lg transition-colors duration-200"
-            onClick={() => {
-              localStorage.clear();
-              window.location.href = "/";
-            }}
+            className="md:hidden text-white hover:text-blue-400 transition-all duration-200"
+            onClick={() => setIsOpen(!isOpen)}
           >
-            Logout
+            {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
-        ) : (
-          <Link to="/login">
-            <button className="w-full text-left hover:bg-red-600 p-3 rounded-lg transition-colors duration-200">
-              Login
-            </button>
-          </Link>
+        </div>
+        {isOpen && (
+          <div className="md:hidden flex flex-col items-center gap-4 py-4 bg-gradient-to-b from-gray-800 to-gray-700 text-lg shadow-md">
+            <Link onClick={() => setIsOpen(false)} to="/allstocks">
+              <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200 font-medium">
+                📦 <span>Stocks</span>
+              </button>
+            </Link>
+
+            <Link onClick={() => setIsOpen(false)} to="/reports">
+              <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200 font-medium">
+                📊 <span>Reports</span>
+              </button>
+            </Link>
+
+            {user ? (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  localStorage.clear();
+                  window.location.href = "/";
+                }}
+                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200"
+              >
+                🚪 <span>Logout</span>
+              </button>
+            ) : (
+              <Link to="/login">
+                <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200">
+                  🔐 <span>Login</span>
+                </button>
+              </Link>
+            )}
+          </div>
         )}
       </nav>
-      <footer className="mt-auto text-sm text-gray-400 text-center pt-6 border-t border-gray-700">
-        © 2025 Therm-X Pvt. Ltd.
+
+      {/* Footer */}
+      <footer className="fixed bottom-2 left-0 w-full text-center text-xs text-gray-400 pt-2 border-t border-gray-700 bg-transparent">
+        © 2025{" "}
+        <span className="font-semibold text-gray-300">Therm-X Pvt. Ltd.</span>
       </footer>
     </div>
   );
