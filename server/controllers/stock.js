@@ -152,7 +152,7 @@ const putStocksbyID = async (req, res) => {
       addedBy,
       companyname,
       shapeDescription,
-      sheetType: "remnant",
+      sheetType: "regular",
     }
   );
   return res.status(200).json({

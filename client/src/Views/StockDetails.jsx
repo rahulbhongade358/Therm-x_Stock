@@ -47,8 +47,7 @@ const StockDetails = () => {
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-8 text-center">
           Stock Details
         </h1>
-        {stockData?.sheetType === "regular" ||
-        stockData?.sheetType === "remnant" ? (
+        {type === "regular" || type === "remnant" ? (
           <div className="mb-8 relative">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
               <span className="text-blue-600 text-2xl">📦</span>
