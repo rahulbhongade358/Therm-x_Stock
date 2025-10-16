@@ -64,9 +64,9 @@ function UpdateRemnant() {
   };
   useEffect(() => {
     setUser(getCurrentuser());
-    const savedForm = localStorage.getItem("newStockForm");
-    if (savedForm) {
-      setNewStock(JSON.parse(savedForm));
+    const savedRemnantStock = localStorage.getItem("updateRemnantStockForm");
+    if (savedRemnantStock) {
+      setNewStock(JSON.parse(savedRemnantStock));
     }
   }, []);
   return (

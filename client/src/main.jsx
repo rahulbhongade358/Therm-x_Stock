@@ -14,6 +14,7 @@ import Canvas from "./Components/Canvas/Canvas.jsx";
 import AddRemnantStockModal from "./Components/AddRemnantStockModal .jsx";
 import RemnantCanvas from "./Components/Canvas/RemnantCanvas.jsx";
 import UpdateRemnantCanvas from "./Components/Canvas/UpdateRemnantCanvas.jsx";
+import UpdateCanvas from "./Components/Canvas/UpdateCanvas.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Router>
@@ -33,6 +34,7 @@ createRoot(document.getElementById("root")).render(
         path="/updateremnantcanvas/:id"
         element={<UpdateRemnantCanvas />}
       />
+      <Route path="/updatecanvas/:id" element={<UpdateCanvas />} />
     </Routes>
   </Router>
 );

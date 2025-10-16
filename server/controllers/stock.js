@@ -121,6 +121,7 @@ const putStocksbyID = async (req, res) => {
     addedBy,
     companyname,
     shapeDescription,
+    sheetCanvas,
   } = req.body;
   const existingStock = await Stock.findOne({ _id: ID });
   if (!existingStock) {
@@ -152,7 +153,8 @@ const putStocksbyID = async (req, res) => {
       addedBy,
       companyname,
       shapeDescription,
-      sheetType: "regular",
+      sheetCanvas,
+      sheetType: existingStock.sheetType,
     }
   );
   return res.status(200).json({

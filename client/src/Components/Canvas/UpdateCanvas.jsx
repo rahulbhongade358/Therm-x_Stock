@@ -3,8 +3,8 @@ import { ReactSketchCanvas } from "react-sketch-canvas";
 import { Undo2, Redo2, Eraser, Save, Trash2, Pencil } from "lucide-react";
 import { useParams } from "react-router"; // ✅ correct import
 
-function UpdateRemnantCanvas({ width = "100%", height = "500px" }) {
-  const { id } = useParams(); // ✅ get the id from URL
+function UpdateCanvas({ width = "100%", height = "500px" }) {
+  const { id } = useParams();
   const canvasRef = useRef(null);
   const [isEraser, setIsEraser] = useState(false);
 
@@ -18,12 +18,10 @@ function UpdateRemnantCanvas({ width = "100%", height = "500px" }) {
 
   const saveCanvas = async () => {
     try {
-      const updateRemnantCanvasData = await canvasRef.current.exportImage(
-        "png"
-      );
-      localStorage.setItem("updateRemnantSheetCanvas", updateRemnantCanvasData);
+      const updateCanvasData = await canvasRef.current.exportImage("png");
+      localStorage.setItem("updateSheetCanvas", updateCanvasData);
       alert("Shape Saved Successfully. You can close this tab now.");
-      setTimeout(() => (window.location.href = `/updateremnant/${id}`), 1000);
+      setTimeout(() => (window.location.href = `/update/${id}`), 1000);
     } catch (error) {
       console.error("Error saving canvas:", error);
       alert("Failed to save canvas. Please try again.");
@@ -85,4 +83,4 @@ function UpdateRemnantCanvas({ width = "100%", height = "500px" }) {
   );
 }
 
-export default UpdateRemnantCanvas;
+export default UpdateCanvas;
