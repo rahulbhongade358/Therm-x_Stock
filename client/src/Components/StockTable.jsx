@@ -4,6 +4,8 @@ import { getCurrentuser } from "../utils/utils.js";
 import { Link } from "react-router";
 import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import toast, { Toaster } from "react-hot-toast";
 function StockTable() {
   const [logginUser, setLogginUser] = useState(null);
@@ -79,6 +81,28 @@ function StockTable() {
 
     doc.save("Stock_Report.pdf");
   };
+  const exportToExcel = () => {
+    const allData = [...stocks, ...remnantstocks].map((s) => ({
+      Thickness: s.thickness,
+      Size: s.size,
+      Quantity: s.quantity,
+      Company: s.companyname,
+      Type: s.sheetType,
+      "Last Updated": s.lastUpdated
+        ? new Date(s.lastUpdated).toLocaleString("en-IN")
+        : "—",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(allData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "Stock_Report.xlsx");
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mx-4 sm:mx-6 mb-8">
@@ -103,12 +127,20 @@ function StockTable() {
             </button>
           )}
         </div>
-        <button
-          onClick={exportToPDF}
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-        >
-          📄 Download Pdf
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={exportToPDF}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-green-700 transition"
+          >
+            📄 Download Pdf
+          </button>
+          <button
+            onClick={exportToExcel}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+          >
+            📊 Download Excel
+          </button>
+        </div>
       </div>
       <div className="w-full overflow-x-auto">
         <table className="w-full min-w-[900px] border border-gray-200 rounded-lg overflow-hidden text-sm sm:text-base table-auto">
