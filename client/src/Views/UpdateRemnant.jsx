@@ -66,7 +66,7 @@ function UpdateRemnant() {
     setUser(getCurrentuser());
     const savedRemnantStock = localStorage.getItem("updateRemnantStockForm");
     if (savedRemnantStock) {
-      setNewStock(JSON.parse(savedRemnantStock));
+      setUpdateRemnantStock(JSON.parse(savedRemnantStock));
     }
   }, []);
   return (
