@@ -13,6 +13,7 @@ function Dashboard() {
   const [remnantstocks, setRemnantStocks] = useState([]);
   const [logginUser, setLogginUser] = useState(null);
   const [stocks, setStocks] = useState([]);
+  const [showgraph, setShowgraph] = useState(false);
   const Stocks = async () => {
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/allstocks`
@@ -26,7 +27,13 @@ function Dashboard() {
   useEffect(() => {
     Stocks();
   }, [logginUser]);
-
+  const totalRemnantQuantity =
+    stocks
+      .filter((s) => s.sheetType === "remnant")
+      .reduce((acc, s) => acc + s.quantity, 0) +
+    remnantstocks
+      .filter((s) => s.sheetType === "remnant")
+      .reduce((acc, s) => acc + s.quantity, 0);
   const totalRemnantCount =
     (stocks?.filter((s) => s.sheetType === "remnant").length || 0) +
     (remnantstocks?.filter((s) => s.sheetType === "remnant").length || 0);
@@ -41,6 +48,18 @@ function Dashboard() {
       title: "Total Remnant-Stock Items",
       value: totalRemnantCount,
       color: "bg-green-500",
+    },
+    {
+      title: "Total Quantity of Regular Stock",
+      value: stocks
+        .filter((s) => s.sheetType === "regular")
+        .reduce((acc, s) => acc + s.quantity, 0),
+      color: "bg-purple-500",
+    },
+    {
+      title: "Total Quantity of Remnant Stock",
+      value: totalRemnantQuantity,
+      color: "bg-purple-500",
     },
     { title: "Managed By", value: "Therm-X Team", color: "bg-yellow-500" },
   ];
@@ -69,22 +88,32 @@ function Dashboard() {
                 </button>
                 <button
                   onClick={() => setShowRemnantModal(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
+                  className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
                 >
                   + Add Remnant
+                </button>
+                <button
+                  className={`${
+                    !showgraph ? "bg-blue-600" : "bg-gray-400"
+                  } hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition`}
+                  onClick={() => setShowgraph(!showgraph)}
+                >
+                  Show Graph
                 </button>
               </div>
             )}
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-            {summaryData.map((item, index) => (
-              <SummaryCard
-                key={index}
-                title={item.title}
-                value={item.value}
-                color={item.color}
-              />
-            ))}
+            {showgraph &&
+              summaryData.map((item, index) => (
+                <SummaryCard
+                  key={index}
+                  title={item.title}
+                  value={item.value}
+                  color={item.color}
+                />
+              ))}
           </div>
           <div className="bg-white shadow-lg rounded-2xl p-4 sm:p-6 overflow-x-auto">
             <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-800">

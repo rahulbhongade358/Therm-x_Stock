@@ -91,8 +91,6 @@ function Sidebar() {
           </div>
         )}
       </nav>
-
-      {/* Footer */}
       <footer className="fixed bottom-2 left-0 w-full text-center text-xs text-gray-400 pt-2 border-t border-gray-700 bg-transparent">
         © 2025{" "}
         <span className="font-semibold text-gray-300">Therm-X Pvt. Ltd.</span>

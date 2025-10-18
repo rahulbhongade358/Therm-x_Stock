@@ -53,7 +53,13 @@ function StockTable() {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    doc.text("Stock Report", 14, 15);
+    doc.text(" Therm-x Stock Report", 100, 20, {
+      align: "center",
+      width: 150,
+      fontSize: 20,
+      fontWeight: "bold",
+      textColor: [22, 160, 133],
+    });
 
     const allData = [...stocks, ...remnantstocks].map((s) => [
       s.thickness,
@@ -76,7 +82,13 @@ function StockTable() {
         ],
       ],
       body: allData,
-      startY: 25,
+      startY: 35,
+      styles: { fontSize: 12, cellPadding: 3 },
+      headStyles: {
+        fillColor: [22, 160, 133],
+        textColor: 255,
+        fontStyle: "bold",
+      },
     });
 
     doc.save("Stock_Report.pdf");
@@ -95,10 +107,11 @@ function StockTable() {
 
     const worksheet = XLSX.utils.json_to_sheet(allData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Report");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Therm-x Stock Report");
     const excelBuffer = XLSX.write(workbook, {
       bookType: "xlsx",
       type: "array",
+      cellDates: true,
     });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "Stock_Report.xlsx");
