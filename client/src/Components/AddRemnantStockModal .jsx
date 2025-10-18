@@ -3,8 +3,9 @@ import { getCurrentuser } from "../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
 import Select from "react-select";
 import axios from "axios";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 function AddRemnantStockModal({ onClose }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sheetOptions, setSheetOptions] = useState([]);
   const [remnantStock, setRemnantStock] = useState({
@@ -19,7 +20,25 @@ function AddRemnantStockModal({ onClose }) {
     sheetCanvas: "",
   });
   let remnantCanvasData = localStorage.getItem("remnantSheetCanvas");
-
+  const validateForm = () => {
+    if (
+      !remnantStock.thickness ||
+      !remnantStock.size ||
+      !remnantStock.quantity ||
+      !remnantStock.companyname ||
+      !remnantStock.remarks ||
+      !remnantStock.shapeDescription
+    ) {
+      toast.error("Please fill in all required fields before proceeding!");
+      return false;
+    }
+    return true;
+  };
+  const handleRemnantDrawShape = () => {
+    if (!validateForm()) return;
+    localStorage.setItem("RemnantStockForm", JSON.stringify(remnantStock));
+    navigate("/remnantcanvas");
+  };
   const addstock = async () => {
     try {
       const sheetData = localStorage.getItem("RemnantStockForm");
@@ -154,17 +173,12 @@ function AddRemnantStockModal({ onClose }) {
           />
           <label className="text-sm font-semibold mt-2">Draw Shape:</label>
           <div className="max-w-4xl mx-auto p-4">
-            <Link
-              to="/remnantcanvas"
-              onClick={() =>
-                localStorage.setItem(
-                  "RemnantStockForm",
-                  JSON.stringify(remnantStock)
-                )
-              }
+            <button
+              onClick={handleRemnantDrawShape}
+              className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
             >
               Draw Shape
-            </Link>
+            </button>
           </div>
           <div>
             <h2>Preview:</h2>

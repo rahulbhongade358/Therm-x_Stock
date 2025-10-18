@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { Undo2, Redo2, Eraser, Save, Trash2, Pencil } from "lucide-react";
-import { useParams } from "react-router"; // ✅ correct import
+import { useParams } from "react-router";
 
 function UpdateCanvas({ width = "100%", height = "500px" }) {
   const { id } = useParams();

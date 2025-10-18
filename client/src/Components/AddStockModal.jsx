@@ -2,8 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { getCurrentuser } from "./../utils/utils.js";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 function AddStockModal({ onClose }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [newStock, setNewStock] = useState({
     sheetType: "regular",
@@ -16,6 +17,23 @@ function AddStockModal({ onClose }) {
     sheetCanvas: "",
   });
   let canvaData = localStorage.getItem("sheetCanvas");
+  const validateForm = () => {
+    if (
+      !newStock.thickness ||
+      !newStock.size ||
+      !newStock.quantity ||
+      !newStock.companyname
+    ) {
+      toast.error("Please fill in all required fields before proceeding!");
+      return false;
+    }
+    return true;
+  };
+  const handleDrawShape = () => {
+    if (!validateForm()) return;
+    localStorage.setItem("newStockForm", JSON.stringify(newStock));
+    navigate("/canvas");
+  };
   const addstock = async () => {
     try {
       const sheetData = localStorage.getItem("newStockForm");
@@ -72,6 +90,7 @@ function AddStockModal({ onClose }) {
             onChange={(e) =>
               setNewStock({ ...newStock, thickness: e.target.value })
             }
+            required
           />
           <input
             type="text"
@@ -79,6 +98,7 @@ function AddStockModal({ onClose }) {
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={newStock.size}
             onChange={(e) => setNewStock({ ...newStock, size: e.target.value })}
+            required
           />
           <input
             type="number"
@@ -88,6 +108,7 @@ function AddStockModal({ onClose }) {
             onChange={(e) =>
               setNewStock({ ...newStock, quantity: e.target.value })
             }
+            required
           />
 
           <input
@@ -98,6 +119,7 @@ function AddStockModal({ onClose }) {
             onChange={(e) =>
               setNewStock({ ...newStock, companyname: e.target.value })
             }
+            required
           />
           <input
             type="text"
@@ -107,6 +129,7 @@ function AddStockModal({ onClose }) {
             onChange={(e) =>
               setNewStock({ ...newStock, remarks: e.target.value })
             }
+            required
           />
           <label htmlFor="sheetType">Sheet Type:</label>
           <select
@@ -130,20 +153,16 @@ function AddStockModal({ onClose }) {
                 onChange={(e) =>
                   setNewStock({ ...newStock, shapeDescription: e.target.value })
                 }
+                required
               />
               <label className="text-sm font-semibold mt-2">Draw Shape:</label>
               <div className="max-w-4xl mx-auto p-4">
-                <Link
-                  to="/canvas"
-                  onClick={() =>
-                    localStorage.setItem(
-                      "newStockForm",
-                      JSON.stringify(newStock)
-                    )
-                  }
+                <button
+                  onClick={handleDrawShape}
+                  className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
                 >
                   Draw Shape
-                </Link>
+                </button>
               </div>
               <div>
                 <h2>Preview:</h2>
