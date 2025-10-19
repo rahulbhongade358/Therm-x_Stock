@@ -4,6 +4,8 @@ import Navbar from "../Components/Navbar";
 import AddStockModal from "../Components/AddStockModal";
 import AddStockRemnantModal from "../Components/AddRemnantStockModal ";
 import axios from "axios";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 import { getCurrentuser } from "../utils/utils";
 
@@ -14,12 +16,15 @@ function Dashboard() {
   const [logginUser, setLogginUser] = useState(null);
   const [stocks, setStocks] = useState([]);
   const [showgraph, setShowgraph] = useState(false);
+  const [loading, setLoading] = useState(false);
   const Stocks = async () => {
+    setLoading(true);
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/allstocks`
     );
     setStocks(response.data.data);
     setRemnantStocks(response.data.remnantstock);
+    setLoading(false);
   };
   useEffect(() => {
     setLogginUser(getCurrentuser());
@@ -78,29 +83,46 @@ function Dashboard() {
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
               📦 Stock Dashboard
             </h2>
-            {logginUser && (
-              <div>
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
-                >
-                  + Add Stock
-                </button>
-                <button
-                  onClick={() => setShowRemnantModal(true)}
-                  className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
-                >
-                  + Add Remnant
-                </button>
-                <button
-                  className={`${
-                    !showgraph ? "bg-blue-600" : "bg-gray-400"
-                  } hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition`}
-                  onClick={() => setShowgraph(!showgraph)}
-                >
-                  Show Graph
-                </button>
+            {loading ? (
+              <div className="flex gap-3 mt-3 sm:mt-0">
+                <>
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton
+                      key={i}
+                      width={110}
+                      height={40}
+                      baseColor="#d1d5db"
+                      highlightColor="#f3f4f6"
+                      borderRadius={8}
+                    />
+                  ))}
+                </>
               </div>
+            ) : (
+              logginUser && (
+                <div>
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
+                  >
+                    + Add Stock
+                  </button>
+                  <button
+                    onClick={() => setShowRemnantModal(true)}
+                    className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
+                  >
+                    + Add Remnant
+                  </button>
+                  <button
+                    className={`${
+                      !showgraph ? "bg-blue-600" : "bg-gray-400"
+                    } hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition`}
+                    onClick={() => setShowgraph(!showgraph)}
+                  >
+                    Show Graph
+                  </button>
+                </div>
+              )
             )}
           </div>
 
@@ -129,65 +151,103 @@ function Dashboard() {
                   <th className="px-3 sm:px-4 py-2 text-left">Company</th>
                 </tr>
               </thead>
-              <tbody className="text-gray-700">
-                {stocks.length === 0
-                  ? null
-                  : limitedStocksItems.map((s) => (
-                      <tr
-                        key={s._id}
-                        className={`border-b transition-all duration-150 hover:bg-gray-50`}
-                      >
-                        <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                        <td className="px-3 sm:px-4 py-2">{s.size}</td>
-                        <td className="px-3 sm:px-4 py-2 font-semibold">
-                          {s.quantity}
-                        </td>
-                        <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                          {s.lastUpdated
-                            ? new Date(s.lastUpdated).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              })
-                            : "—"}
-                        </td>
 
-                        <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                      </tr>
-                    ))}
-              </tbody>
-              <tbody className="text-gray-700">
-                {remnantstocks.length === 0
-                  ? null
-                  : limitedRemnantItems.map((s) => (
-                      <tr
-                        key={s._id}
-                        className={`border-b transition-all duration-150 hover:bg-gray-50`}
-                      >
-                        <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                        <td className="px-3 sm:px-4 py-2">{s.size}</td>
-                        <td className="px-3 sm:px-4 py-2 font-semibold">
-                          {s.quantity}
-                        </td>
-                        <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
-                          {s.lastUpdated
-                            ? new Date(s.lastUpdated).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: true,
-                              })
-                            : "—"}
-                        </td>
-                        <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
-                      </tr>
-                    ))}
-              </tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="5">
+                    <Skeleton
+                      count={2}
+                      height={40}
+                      baseColor="#f3f4f6"
+                      highlightColor="#e5e7eb"
+                      borderRadius={8}
+                      width={"100%"}
+                    />
+                  </td>
+                </tr>
+              ) : stocks.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-4 text-gray-500">
+                    No stock data available
+                  </td>
+                </tr>
+              ) : (
+                <tbody className="text-gray-700">
+                  {limitedStocksItems.map((s) => (
+                    <tr
+                      key={s._id}
+                      className="border-b transition-all duration-150 hover:bg-gray-50"
+                    >
+                      <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
+                      <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                      <td className="px-3 sm:px-4 py-2 font-semibold">
+                        {s.quantity}
+                      </td>
+                      <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                        {s.lastUpdated
+                          ? new Date(s.lastUpdated).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                          : "—"}
+                      </td>
+                      <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+              {loading ? (
+                <tr>
+                  <td colSpan="5">
+                    <Skeleton
+                      count={2}
+                      height={40}
+                      baseColor="#f3f4f6"
+                      highlightColor="#e5e7eb"
+                      borderRadius={8}
+                      width={"100%"}
+                    />
+                  </td>
+                </tr>
+              ) : remnantstocks.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center py-4 text-gray-500">
+                    No remnant data available
+                  </td>
+                </tr>
+              ) : (
+                <tbody className="text-gray-700">
+                  {limitedRemnantItems.map((s) => (
+                    <tr
+                      key={s._id}
+                      className={`border-b transition-all duration-150 hover:bg-gray-50`}
+                    >
+                      <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
+                      <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                      <td className="px-3 sm:px-4 py-2 font-semibold">
+                        {s.quantity}
+                      </td>
+                      <td className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-500">
+                        {s.lastUpdated
+                          ? new Date(s.lastUpdated).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })
+                          : "—"}
+                      </td>
+                      <td className="px-3 sm:px-4 py-2">{s.companyname}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
             </table>
             <div className="mt-4 rounded-2xl shadow-md text-white bg-indigo-500 w-fit p-4 font-medium text-sm sm:text-base transition transform hover:scale-105">
               Total Stocks:{" "}

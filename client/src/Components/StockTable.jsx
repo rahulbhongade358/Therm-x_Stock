@@ -7,17 +7,22 @@ import { autoTable } from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import toast, { Toaster } from "react-hot-toast";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 function StockTable() {
   const [logginUser, setLogginUser] = useState(null);
   const [stocks, setStocks] = useState([]);
   const [remnantstocks, setRemnantStocks] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const Stocks = async () => {
+    setLoading(true);
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/allstocks`
     );
     setStocks(response.data.data);
     setRemnantStocks(response.data.remnantstock);
+    setLoading(false);
   };
   const searchStock = async () => {
     toast.loading("🔎 Searching for stocks...", { id: "searching" });
@@ -141,18 +146,35 @@ function StockTable() {
           )}
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={exportToPDF}
-            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-green-700 transition"
-          >
-            📄 Download Pdf
-          </button>
-          <button
-            onClick={exportToExcel}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-          >
-            📊 Download Excel
-          </button>
+          {loading ? (
+            <>
+              {[1, 2].map((i) => (
+                <Skeleton
+                  key={i}
+                  width={110}
+                  height={40}
+                  baseColor="#d1d5db"
+                  highlightColor="#f3f4f6"
+                  borderRadius={8}
+                />
+              ))}
+            </>
+          ) : (
+            <>
+              <button
+                onClick={exportToPDF}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-green-700 transition"
+              >
+                📄 Download Pdf
+              </button>
+              <button
+                onClick={exportToExcel}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+              >
+                📊 Download Excel
+              </button>{" "}
+            </>
+          )}
         </div>
       </div>
       <div className="w-full overflow-x-auto">
@@ -177,18 +199,28 @@ function StockTable() {
             </tr>
           </thead>
 
-          <tbody className="text-gray-700 divide-y">
-            {stocks.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="text-center py-6 text-gray-500 italic"
-                >
-                  No stock data available.
-                </td>
-              </tr>
-            ) : (
-              stocks.map((s) => (
+          {loading ? (
+            <tr>
+              <td colSpan="7">
+                <Skeleton
+                  count={2}
+                  height={40}
+                  baseColor="#f3f4f6"
+                  highlightColor="#e5e7eb"
+                  borderRadius={8}
+                  width={"100%"}
+                />
+              </td>
+            </tr>
+          ) : stocks.length === 0 ? (
+            <tr>
+              <td colSpan="7" className="text-center py-4 text-gray-500">
+                No stock data available
+              </td>
+            </tr>
+          ) : (
+            <tbody className="text-gray-700">
+              {stocks.map((s) => (
                 <tr
                   key={s._id}
                   className="hover:bg-gray-50 transition-all duration-150 cursor-pointer"
@@ -265,22 +297,31 @@ function StockTable() {
                     )}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-
-          <tbody className="text-gray-700 divide-y ">
-            {remnantstocks.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="text-center py-6 text-gray-500 italic"
-                >
-                  No stock data available.
-                </td>
-              </tr>
-            ) : (
-              remnantstocks.map((s) => (
+              ))}
+            </tbody>
+          )}
+          {loading ? (
+            <tr>
+              <td colSpan="7">
+                <Skeleton
+                  count={2}
+                  height={40}
+                  baseColor="#f3f4f6"
+                  highlightColor="#e5e7eb"
+                  borderRadius={8}
+                  width={"100%"}
+                />
+              </td>
+            </tr>
+          ) : remnantstocks.length === 0 ? (
+            <tr>
+              <td colSpan="7" className="text-center py-4 text-gray-500">
+                No stock data available
+              </td>
+            </tr>
+          ) : (
+            <tbody className="text-gray-700">
+              {remnantstocks.map((s) => (
                 <tr
                   key={s._id}
                   className="hover:bg-gray-50 transition-all duration-150 cursor-pointer"
@@ -345,7 +386,7 @@ function StockTable() {
                   <td className="px-4 py-2">
                     {logginUser ? (
                       <Link
-                        to={`/updateremnant/${s._id}`}
+                        to={`/update/${s._id}`}
                         className="text-blue-600 hover:text-blue-800 font-medium"
                       >
                         Update
@@ -357,9 +398,9 @@ function StockTable() {
                     )}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
+              ))}
+            </tbody>
+          )}
         </table>
       </div>
 
