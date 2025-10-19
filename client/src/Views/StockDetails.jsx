@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const StockDetails = () => {
   const { id } = useParams();
   const [zoom, setZoom] = useState(false);
   const [stockData, setStockData] = useState(null);
   const [remnantData, setRemnantData] = useState(null);
-
+  const [loadingStock, setLoadingStock] = useState(true);
+  const [loadingRemnant, setLoadingRemnant] = useState(true);
   const fetchData = async () => {
     try {
       const stockRes = await axios.get(
@@ -19,7 +22,9 @@ const StockDetails = () => {
       );
 
       setStockData(stockRes?.data?.data);
+      setLoadingStock(false);
       setRemnantData(remnantRes?.data?.data);
+      setLoadingRemnant(false);
     } catch (err) {
       console.error("Error fetching data:", err);
     }
@@ -47,7 +52,15 @@ const StockDetails = () => {
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-8 text-center">
           Stock Details
         </h1>
-        {type === "regular" || type === "remnant" ? (
+        {loadingStock ? (
+          <SkeletonTheme baseColor="#e5e7eb" highlightColor="#f3f4f6">
+            <div className="space-y-4 p-4">
+              <Skeleton height={30} width={"40%"} />
+              <Skeleton height={25} count={6} />
+              <Skeleton height={180} borderRadius={10} />
+            </div>
+          </SkeletonTheme>
+        ) : type === "regular" || type === "remnant" ? (
           <div className="mb-8 relative">
             <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
               <span className="text-blue-600 text-2xl">📦</span>
@@ -151,9 +164,15 @@ const StockDetails = () => {
           </div>
         ) : null}
 
-        <div className="border-t border-gray-300 my-6"></div>
-
-        {remnantData?.sheetType === "remnant" ? (
+        {loadingRemnant ? (
+          <SkeletonTheme baseColor="#e5e7eb" highlightColor="#f3f4f6">
+            <div className="space-y-4 p-4">
+              <Skeleton height={30} width={"40%"} />
+              <Skeleton height={25} count={6} />
+              <Skeleton height={180} borderRadius={10} />
+            </div>
+          </SkeletonTheme>
+        ) : remnantData?.sheetType === "remnant" ? (
           <div>
             <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
               <span className="text-blue-600 text-2xl">🧩</span>
