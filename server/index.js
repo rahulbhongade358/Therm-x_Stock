@@ -23,10 +23,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [
-      "https://therm-x-stock-in.onrender.com", // deployed frontend
-      "http://localhost:5173", // local frontend
-    ],
+    origin: ["https://therm-x-stock-in.onrender.com", "http://localhost:5173"],
     credentials: true,
   })
 );
@@ -37,11 +34,10 @@ const connectDB = async () => {
     console.log("✅ MongoDB connected successfully");
   } catch (error) {
     console.error(`MongoDB connection error: ${error.message}`);
-    process.exit(1); // exit server if DB fails
+    process.exit(1);
   }
 };
 
-// Routes
 app.get("/health", (req, res) => {
   res.json({
     success: true,
