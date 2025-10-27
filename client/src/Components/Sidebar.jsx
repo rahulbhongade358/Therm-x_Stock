@@ -12,10 +12,10 @@ function Sidebar() {
   }, []);
 
   return (
-    <div className="flex justify-between items-center px-4 md:px-10 h-[60px]">
-      <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg">
+    <div className="relative z-50">
+      <nav className="fixed top-0 left-0 w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg z-50">
         <div className="flex justify-between items-center px-6 py-4">
-          <h1 className="text-3xl font-extrabold tracking-wider text-white  drop-shadow-md">
+          <h1 className="text-3xl font-extrabold tracking-wider text-white drop-shadow-md">
             THERM-<span className="text-red-700 italic">X</span>
           </h1>
           <div className="hidden md:flex items-center gap-6 text-lg font-medium">
@@ -91,6 +91,8 @@ function Sidebar() {
           </div>
         )}
       </nav>
+      <div className="pt-[80px]"></div>
+
       <footer className="fixed bottom-2 left-0 w-full text-center text-xs text-gray-400 pt-2 border-t border-gray-700 bg-transparent">
         © 2025{" "}
         <span className="font-semibold text-gray-300">Therm-X Pvt. Ltd.</span>
