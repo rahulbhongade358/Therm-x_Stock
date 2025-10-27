@@ -8,10 +8,12 @@ import "react-loading-skeleton/dist/skeleton.css";
 const StockDetails = () => {
   const { id } = useParams();
   const [zoom, setZoom] = useState(false);
+  const [zoomImage, setZoomImage] = useState(null); // ✅ added
   const [stockData, setStockData] = useState(null);
   const [remnantData, setRemnantData] = useState(null);
   const [loadingStock, setLoadingStock] = useState(true);
   const [loadingRemnant, setLoadingRemnant] = useState(true);
+
   const fetchData = async () => {
     try {
       const stockRes = await axios.get(
@@ -29,6 +31,7 @@ const StockDetails = () => {
       console.error("Error fetching data:", err);
     }
   };
+
   const deletesheet = async () => {
     const del = await axios.delete(
       `${import.meta.env.VITE_API_URL}/stock/${id}`
@@ -38,20 +41,25 @@ const StockDetails = () => {
       fetchData();
     }
   };
-  const zoomCanva = () => {
-    setZoom(!zoom);
-    console.log(zoom);
+
+  const zoomCanva = (img) => {
+    setZoom(true);
+    setZoomImage(img);
   };
+
   useEffect(() => {
     fetchData();
   }, [id]);
+
   const type = stockData?.sheetType;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <div className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-3xl">
         <h1 className="text-2xl sm:text-3xl font-bold text-blue-700 mb-8 text-center">
           Stock Details
         </h1>
+
         {loadingStock ? (
           <SkeletonTheme baseColor="#e5e7eb" highlightColor="#f3f4f6">
             <div className="space-y-4 p-4">
@@ -115,10 +123,10 @@ const StockDetails = () => {
                         <img
                           src={stockData.sheetCanvas}
                           alt="Sheet Canvas"
-                          className="w-70 h-50  border border-gray-300 rounded-lg shadow-sm"
+                          className="w-70 h-50 border border-gray-300 rounded-lg shadow-sm"
                         />
                         <button
-                          onClick={zoomCanva}
+                          onClick={() => zoomCanva(stockData.sheetCanvas)} // ✅ pass image
                           className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition-all duration-200"
                         >
                           🔍 Zoom
@@ -132,24 +140,6 @@ const StockDetails = () => {
                   </div>
                 </div>
               ) : null}
-              {zoom && (
-                <div className="fixed inset-0 bg-gray-400 bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
-                  <div className="relative">
-                    <img
-                      src={stockData.sheetCanvas}
-                      alt="Zoomed Sheet Canvas"
-                      className="max-w-[90vw] max-h-[100vh] rounded-xl shadow-2xl transform scale-100 transition-transform duration-300"
-                    />
-                    <button
-                      onClick={() => setZoom(false)}
-                      className="absolute top-2 right-2 bg-white hover:bg-gray-200 text-gray-800 font-semibold px-3 py-1 rounded-lg shadow-md transition-all duration-200"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              )}
-
               <p className="col-span-1 sm:col-span-2">
                 <span className="font-semibold text-gray-900">Added By:</span>{" "}
                 {stockData.addedBy?.name} ({stockData.addedBy?.email})
@@ -210,14 +200,45 @@ const StockDetails = () => {
                 <span className="font-semibold text-gray-900">Added By:</span>{" "}
                 {remnantData.addedBy?.name} ({remnantData.addedBy?.email})
               </p>
-              <img
-                src={remnantData.sheetCanvas}
-                alt="sheetCanvas"
-                className="w-48 h-32 border rounded-2xl shadow"
-              />
+              {remnantData.sheetCanvas ? (
+                <div>
+                  <img
+                    src={remnantData.sheetCanvas}
+                    alt="Sheet Canvas"
+                    className="w-70 h-50 border border-gray-300 rounded-lg shadow-sm"
+                  />
+                  <button
+                    onClick={() => zoomCanva(remnantData.sheetCanvas)}
+                    className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition-all duration-200"
+                  >
+                    🔍 Zoom
+                  </button>
+                </div>
+              ) : (
+                <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                  No Preview
+                </div>
+              )}
             </div>
           </div>
         ) : null}
+        {zoom && (
+          <div className="fixed inset-0 bg-gray-400 bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+            <div className="relative">
+              <img
+                src={zoomImage}
+                alt="Zoomed Sheet Canvas"
+                className="max-w-[90vw] max-h-[100vh] rounded-xl shadow-2xl transform scale-100 transition-transform duration-300"
+              />
+              <button
+                onClick={() => setZoom(false)}
+                className="absolute top-2 right-2 bg-white hover:bg-gray-200 text-gray-800 font-semibold px-3 py-1 rounded-lg shadow-md transition-all duration-200"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="mt-10 text-center">
           <button
