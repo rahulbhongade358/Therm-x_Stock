@@ -20,10 +20,10 @@ function SignUp() {
         toast.error(response.data.message);
       } else {
         toast.success(response.data.message);
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 2000);
       }
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
     } catch (error) {
       console.error(
         "Error adding user:",
@@ -78,6 +78,7 @@ function SignUp() {
             }}
             className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
+            <option value="">Select Role</option>
             <option value="employee">Employee</option>
             <option value="staff">Staff</option>
           </select>
