@@ -16,6 +16,7 @@ import {
   putRemnantStocksbyID,
   getRemnantStocksbyID,
   getRemnantStock,
+  deleteremnantStockbyID,
 } from "./controllers/remnant.js";
 dotenv.config();
 const app = express();
@@ -57,6 +58,7 @@ app.get("/remnantstocks/:ID", getRemnantStocksbyID);
 app.put("/stocks/:ID", putStocksbyID);
 app.put("/remnantstocks/:ID", putRemnantStocksbyID);
 app.delete("/stock/:ID", deleteStockbyID);
+app.delete("/remnantstocks/:ID", deleteremnantStockbyID);
 
 const PORT = process.env.PORT || 8080;
 const startServer = async () => {

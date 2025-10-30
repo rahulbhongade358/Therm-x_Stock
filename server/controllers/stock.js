@@ -130,6 +130,13 @@ const putStocksbyID = async (req, res) => {
       message: "Blog not Found",
     });
   }
+  if (size === "0" || thickness === "0") {
+    await Stock.findByIdAndDelete(ID);
+    return res.status(200).json({
+      success: true,
+      message: "Remnant fully used — record deleted automatically",
+    });
+  }
   if (
     !thickness ||
     !size ||
@@ -170,7 +177,7 @@ const deleteStockbyID = async (req, res) => {
   res.json({
     success: true,
     data: updatedata,
-    message: `🐶 Pet Deleted Successfully`,
+    message: `Sheet Deleted Successfully`,
   });
 };
 export {

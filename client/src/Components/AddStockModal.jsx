@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 function AddStockModal({ onClose }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newStock, setNewStock] = useState({
     sheetType: "regular",
     thickness: "",
@@ -36,6 +37,7 @@ function AddStockModal({ onClose }) {
   };
   const addstock = async () => {
     try {
+      setIsSubmitting(true);
       const sheetData = localStorage.getItem("newStockForm");
       const restoredStock = sheetData ? JSON.parse(sheetData) : newStock;
       const payload = {
@@ -54,10 +56,14 @@ function AddStockModal({ onClose }) {
         localStorage.removeItem("newStockForm");
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 1000);
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error saving stock");
+    } finally {
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 2000);
     }
   };
   useEffect(() => {
@@ -185,14 +191,20 @@ function AddStockModal({ onClose }) {
               type="button"
               className="w-1/2 mr-2 px-4 py-2 rounded-lg border border-gray-400 hover:bg-gray-100 transition"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               onClick={addstock}
-              className="w-1/2 ml-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
+              disabled={isSubmitting}
+              className={`w-1/2 ml-2 px-4 py-2 rounded-lg font-semibold text-white transition ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Save
+              {isSubmitting ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

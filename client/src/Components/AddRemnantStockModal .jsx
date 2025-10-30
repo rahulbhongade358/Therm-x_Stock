@@ -5,6 +5,7 @@ import Select from "react-select";
 import axios from "axios";
 import { useNavigate } from "react-router";
 function AddRemnantStockModal({ onClose }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sheetOptions, setSheetOptions] = useState([]);
@@ -41,6 +42,7 @@ function AddRemnantStockModal({ onClose }) {
   };
   const addstock = async () => {
     try {
+      setIsSubmitting(true);
       const sheetData = localStorage.getItem("RemnantStockForm");
       const restoredStock = sheetData ? JSON.parse(sheetData) : remnantStock;
       const payload = {
@@ -58,10 +60,14 @@ function AddRemnantStockModal({ onClose }) {
         localStorage.removeItem("RemnantStockForm");
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 1000);
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error saving stock");
+    } finally {
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 2000);
     }
   };
   const fetchSheets = async () => {
@@ -200,14 +206,20 @@ function AddRemnantStockModal({ onClose }) {
               type="button"
               className="w-1/2 mr-2 px-4 py-2 rounded-lg border border-gray-400 hover:bg-gray-100 transition"
               onClick={onClose}
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               onClick={addstock}
-              className="w-1/2 ml-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
+              disabled={isSubmitting}
+              className={`w-1/2 ml-2 px-4 py-2 rounded-lg font-semibold text-white transition ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Save
+              {isSubmitting ? "Saving..." : "Save"}
             </button>
           </div>
         </div>

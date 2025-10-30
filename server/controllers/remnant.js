@@ -42,36 +42,6 @@ const postRemnantStocks = async (req, res) => {
     message: "Stock is saved Successfully",
   });
 };
-// const getRemnantStockbySearch = async (req, res) => {
-//   const { q } = req.query;
-//   const conditions = [];
-//   if (!isNaN(q)) {
-//     conditions.push({ thickness: Number(q) });
-//   }
-
-//   conditions.push({ companyname: { $regex: q, $options: "i" } });
-//   conditions.push({ companyname: { $regex: q, $options: "i" } });
-//   const Remnant = await RemnantStock.find({ $or: conditions });
-//   try {
-//     if (Remnant.length == 0) {
-//       return res.status(404).json({
-//         success: false,
-//         data: [],
-//         message: "❌ No Stock found ",
-//       });
-//     }
-//     res.json({
-//       success: true,
-//       data: Remnant,
-//       message: ` ${Remnant.length} Stocks fetched successfully`,
-//     });
-//   } catch (error) {
-//     return res.json({
-//       success: false,
-//       message: `${error}`,
-//     });
-//   }
-// };
 
 const putRemnantStocksbyID = async (req, res) => {
   const { ID } = req.params;
@@ -89,6 +59,13 @@ const putRemnantStocksbyID = async (req, res) => {
     return res.status(404).json({
       success: false,
       message: "Blog not Found",
+    });
+  }
+  if (size === "0" || thickness === "0") {
+    await RemnantStock.findByIdAndDelete(ID);
+    return res.status(200).json({
+      success: true,
+      message: "Remnant fully used — record deleted automatically",
     });
   }
   const updatestock = await RemnantStock.findOneAndUpdate(
@@ -150,8 +127,18 @@ const getRemnantStock = async (req, res) => {
     message: `${remnantstock.length} Stocks fetched successfully`,
   });
 };
-
+const deleteremnantStockbyID = async (req, res) => {
+  const { ID } = req.params;
+  await RemnantStock.findByIdAndDelete(ID);
+  const updatedata = await RemnantStock.find();
+  res.json({
+    success: true,
+    data: updatedata,
+    message: `Sheet Deleted Successfully`,
+  });
+};
 export {
+  deleteremnantStockbyID,
   postRemnantStocks,
   putRemnantStocksbyID,
   getRemnantStocksbyID,
