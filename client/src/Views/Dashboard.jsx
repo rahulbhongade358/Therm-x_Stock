@@ -145,7 +145,8 @@ function Dashboard() {
               <thead className="bg-gray-900 text-white uppercase text-xs sm:text-sm tracking-wide">
                 <tr>
                   <th className="px-3 sm:px-4 py-2 text-left">Thickness</th>
-                  <th className="px-3 sm:px-4 py-2 text-left">Size</th>
+                  <th className="px-3 sm:px-4 py-2 text-left">Length</th>
+                  <th className="px-3 sm:px-4 py-2 text-left">Width</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Quantity</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Last Updated</th>
                   <th className="px-3 sm:px-4 py-2 text-left">Company</th>
@@ -179,7 +180,8 @@ function Dashboard() {
                       className="border-b transition-all duration-150 hover:bg-gray-50"
                     >
                       <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                      <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                      <td className="px-3 sm:px-4 py-2">{s.length}</td>
+                      <td className="px-3 sm:px-4 py-2">{s.width}</td>
                       <td className="px-3 sm:px-4 py-2 font-semibold">
                         {s.quantity}
                       </td>
@@ -227,7 +229,8 @@ function Dashboard() {
                       className={`border-b transition-all duration-150 hover:bg-gray-50`}
                     >
                       <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                      <td className="px-3 sm:px-4 py-2">{s.size}</td>
+                      <td className="px-3 sm:px-4 py-2">{s.length}</td>
+                      <td className="px-3 sm:px-4 py-2">{s.width}</td>
                       <td className="px-3 sm:px-4 py-2 font-semibold">
                         {s.quantity}
                       </td>

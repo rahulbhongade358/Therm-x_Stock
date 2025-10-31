@@ -12,7 +12,8 @@ function AddRemnantStockModal({ onClose }) {
   const [remnantStock, setRemnantStock] = useState({
     sheetType: "remnant",
     thickness: "",
-    size: "",
+    length: "",
+    width: "",
     quantity: "1",
     remarks: "",
     addedBy: "",
@@ -24,7 +25,8 @@ function AddRemnantStockModal({ onClose }) {
   const validateForm = () => {
     if (
       !remnantStock.thickness ||
-      !remnantStock.size ||
+      !remnantStock.length ||
+      !remnantStock.width ||
       !remnantStock.quantity ||
       !remnantStock.companyname ||
       !remnantStock.remarks ||
@@ -78,7 +80,7 @@ function AddRemnantStockModal({ onClose }) {
       setSheetOptions(searchResponse.data.data);
       const formatted = searchResponse.data.data.map((sheet) => ({
         value: sheet._id,
-        label: `${sheet.thickness}mm × ${sheet.size} (${sheet.companyname})`,
+        label: `${sheet.thickness}mm × ${sheet.length}mm × ${sheet.width}mm (${sheet.companyname})`,
       }));
       setSheetOptions(formatted);
     } catch (error) {
@@ -138,12 +140,21 @@ function AddRemnantStockModal({ onClose }) {
             }
           />
           <input
-            type="text"
-            placeholder="Size (mm x mm)"
+            type="number"
+            placeholder="Length (mm)"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={remnantStock.size}
+            value={remnantStock.length}
             onChange={(e) =>
-              setRemnantStock({ ...remnantStock, size: e.target.value })
+              setRemnantStock({ ...remnantStock, length: e.target.value })
+            }
+          />
+          <input
+            type="number"
+            placeholder="Width (mm)"
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={remnantStock.width}
+            onChange={(e) =>
+              setRemnantStock({ ...remnantStock, width: e.target.value })
             }
           />
 

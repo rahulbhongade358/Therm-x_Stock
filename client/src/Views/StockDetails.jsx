@@ -93,8 +93,12 @@ const StockDetails = () => {
                 {stockData.thickness} mm
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Size:</span>{" "}
-                {stockData.size}
+                <span className="font-semibold text-gray-900">Length:</span>{" "}
+                {stockData.length} mm
+              </p>
+              <p>
+                <span className="font-semibold text-gray-900">Width:</span>{" "}
+                {stockData.width} mm
               </p>
               <p>
                 <span className="font-semibold text-gray-900">Quantity:</span>{" "}
@@ -187,8 +191,12 @@ const StockDetails = () => {
                 {remnantData.thickness} mm
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Size:</span>{" "}
-                {remnantData.size}
+                <span className="font-semibold text-gray-900">Length:</span>{" "}
+                {remnantData.length} mm
+              </p>
+              <p>
+                <span className="font-semibold text-gray-900">Width:</span>{" "}
+                {remnantData.width} mm
               </p>
               <p>
                 <span className="font-semibold text-gray-900">Quantity:</span>{" "}

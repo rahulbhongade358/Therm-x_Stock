@@ -9,7 +9,8 @@ function Update() {
   const [user, setUser] = useState(null);
   const [updateStock, setUpdateStock] = useState({
     thickness: "",
-    size: "",
+    length: "",
+    width: "",
     quantity: "",
     remarks: "",
     addedBy: "",
@@ -21,7 +22,8 @@ function Update() {
   const validateForm = () => {
     if (
       !updateStock.thickness ||
-      !updateStock.size ||
+      !updateStock.length ||
+      !updateStock.width ||
       !updateStock.quantity ||
       !updateStock.companyname
     ) {
@@ -86,7 +88,8 @@ function Update() {
   }, []);
   const baseFields = [
     { label: "Thickness (mm)", key: "thickness", type: "number" },
-    { label: "Size (mm × mm)", key: "size", type: "text" },
+    { label: "Length (mm × mm)", key: "length", type: "text" },
+    { label: "Width (mm × mm)", key: "width", type: "text" },
     { label: "Quantity", key: "quantity", type: "number" },
     { label: "Remarks", key: "remarks", type: "text" },
     { label: "Company Name", key: "companyname", type: "text" },

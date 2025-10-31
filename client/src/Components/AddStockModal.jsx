@@ -10,7 +10,8 @@ function AddStockModal({ onClose }) {
   const [newStock, setNewStock] = useState({
     sheetType: "regular",
     thickness: "",
-    size: "",
+    length: "",
+    width: "",
     quantity: "",
     remarks: "",
     addedBy: "",
@@ -21,7 +22,8 @@ function AddStockModal({ onClose }) {
   const validateForm = () => {
     if (
       !newStock.thickness ||
-      !newStock.size ||
+      !newStock.length ||
+      !newStock.width ||
       !newStock.quantity ||
       !newStock.companyname
     ) {
@@ -99,11 +101,23 @@ function AddStockModal({ onClose }) {
             required
           />
           <input
-            type="text"
-            placeholder="Size (mm x mm)"
+            type="number"
+            placeholder="Length (mm x mm)"
             className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-            value={newStock.size}
-            onChange={(e) => setNewStock({ ...newStock, size: e.target.value })}
+            value={newStock.length}
+            onChange={(e) =>
+              setNewStock({ ...newStock, length: e.target.value })
+            }
+            required
+          />
+          <input
+            type="number"
+            placeholder="Width (mm x mm)"
+            className="border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            value={newStock.width}
+            onChange={(e) =>
+              setNewStock({ ...newStock, width: e.target.value })
+            }
             required
           />
           <input

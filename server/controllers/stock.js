@@ -5,7 +5,8 @@ const postStocks = async (req, res) => {
   const {
     sheetType = "regular",
     thickness,
-    size,
+    length,
+    width,
     quantity,
     approxArea,
     shapeDescription,
@@ -14,10 +15,14 @@ const postStocks = async (req, res) => {
     remarks,
     sheetCanvas,
   } = req.body;
+  const density = 7850; // kg/m³ for steel
+  const weight = (length * width * thickness * density) / 1000000000;
   const newStock = new Stock({
     sheetType,
     thickness,
-    size,
+    length,
+    width,
+    weight,
     quantity,
     approxArea,
     shapeDescription,
@@ -115,7 +120,8 @@ const putStocksbyID = async (req, res) => {
   const { ID } = req.params;
   const {
     thickness,
-    size,
+    length,
+    width,
     quantity,
     remarks,
     addedBy,
@@ -123,6 +129,8 @@ const putStocksbyID = async (req, res) => {
     shapeDescription,
     sheetCanvas,
   } = req.body;
+  const density = 7850; // kg/m³ for steel
+  const weight = (length * width * thickness * density) / 1000000000;
   const existingStock = await Stock.findOne({ _id: ID });
   if (!existingStock) {
     return res.status(404).json({
@@ -130,7 +138,7 @@ const putStocksbyID = async (req, res) => {
       message: "Blog not Found",
     });
   }
-  if (size === "0" || thickness === "0") {
+  if ((length && width === "0") || thickness === "0") {
     await Stock.findByIdAndDelete(ID);
     return res.status(200).json({
       success: true,
@@ -139,7 +147,8 @@ const putStocksbyID = async (req, res) => {
   }
   if (
     !thickness ||
-    !size ||
+    !length ||
+    !width ||
     !quantity ||
     !remarks ||
     !addedBy ||
@@ -154,7 +163,9 @@ const putStocksbyID = async (req, res) => {
     { _id: ID },
     {
       thickness,
-      size,
+      length,
+      width,
+      weight,
       quantity,
       remarks,
       addedBy,

@@ -68,7 +68,9 @@ function StockTable() {
 
     const allData = [...stocks, ...remnantstocks].map((s) => [
       s.thickness,
-      s.size,
+      s.length,
+      s.width,
+      s.weight,
       s.quantity,
       s.companyname,
       s.sheetType,
@@ -79,7 +81,9 @@ function StockTable() {
       head: [
         [
           "Thickness (mm)",
-          "Size",
+          "Length (mm)",
+          "Width (mm)",
+          "Weight (kg)",
           "Quantity",
           "Company",
           "Type",
@@ -101,7 +105,9 @@ function StockTable() {
   const exportToExcel = () => {
     const allData = [...stocks, ...remnantstocks].map((s) => ({
       Thickness: s.thickness,
-      Size: s.size,
+      Length: s.length,
+      Width: s.width,
+      Weight: s.weight,
       Quantity: s.quantity,
       Company: s.companyname,
       Type: s.sheetType,
@@ -184,12 +190,20 @@ function StockTable() {
               <th className="px-4 py-2 text-left whitespace-nowrap">
                 Thickness (mm)
               </th>
-              <th className="px-4 py-2 text-left whitespace-nowrap">Size</th>
+              <th className="px-4 py-2 text-left whitespace-nowrap">
+                Length (mm)
+              </th>
+              <th className="px-4 py-2 text-left whitespace-nowrap">
+                Width (mm)
+              </th>
               <th className="px-4 py-2 text-left whitespace-nowrap">
                 Quantity
               </th>
               <th className="px-4 py-2 text-left whitespace-nowrap">
                 Last Updated
+              </th>
+              <th className="px-4 py-2 text-left whitespace-nowrap">
+                Weight (kg)
               </th>
               <th className="px-4 py-2 text-left whitespace-nowrap">
                 Sheet Type
@@ -238,7 +252,15 @@ function StockTable() {
                       to={`/stockdetails/${s._id}`}
                       className="block w-full h-full"
                     >
-                      {s.size}
+                      {s.length}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-2">
+                    <Link
+                      to={`/stockdetails/${s._id}`}
+                      className="block w-full h-full"
+                    >
+                      {s.width}
                     </Link>
                   </td>
                   <td className="px-4 py-2 font-semibold">
@@ -264,6 +286,14 @@ function StockTable() {
                             hour12: true,
                           })
                         : "—"}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-2 text-gray-500 text-sm">
+                    <Link
+                      to={`/stockdetails/${s._id}`}
+                      className="block w-full h-full"
+                    >
+                      {s.weight}
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-gray-500 text-sm">
@@ -339,7 +369,15 @@ function StockTable() {
                       to={`/stockdetails/${s._id}`}
                       className="block w-full h-full"
                     >
-                      {s.size}
+                      {s.length}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-2">
+                    <Link
+                      to={`/stockdetails/${s._id}`}
+                      className="block w-full h-full"
+                    >
+                      {s.width}
                     </Link>
                   </td>
                   <td className="px-4 py-2 font-semibold">
@@ -365,6 +403,14 @@ function StockTable() {
                             hour12: true,
                           })
                         : "—"}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-2 text-gray-500 text-sm">
+                    <Link
+                      to={`/stockdetails/${s._id}`}
+                      className="block w-full h-full"
+                    >
+                      {s.weight}
                     </Link>
                   </td>
                   <td className="px-4 py-2 text-gray-500 text-sm">

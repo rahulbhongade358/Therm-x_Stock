@@ -4,7 +4,8 @@ import RemnantStock from "./../models/Remnant.js";
 const postRemnantStocks = async (req, res) => {
   const {
     thickness,
-    size,
+    length,
+    width,
     shapeDescription,
     companyname,
     addedBy,
@@ -12,9 +13,13 @@ const postRemnantStocks = async (req, res) => {
     remarks,
     sheetCanvas,
   } = req.body;
+  const density = 7850; // kg/m³ for steel
+  const weight = (length * width * thickness * density) / 1000000000;
   const newRemnantStock = new RemnantStock({
     thickness,
-    size,
+    length,
+    width,
+    weight,
     shapeDescription,
     companyname,
     addedBy,
@@ -47,13 +52,16 @@ const putRemnantStocksbyID = async (req, res) => {
   const { ID } = req.params;
   const {
     thickness,
-    size,
+    length,
+    width,
     remarks,
     addedBy,
     companyname,
     shapeDescription,
     sheetCanvas,
   } = req.body;
+  const density = 7850; // kg/m³ for steel
+  const weight = (length * width * thickness * density) / 1000000000;
   const existingStock = await RemnantStock.findOne({ _id: ID });
   if (!existingStock) {
     return res.status(404).json({
@@ -61,7 +69,7 @@ const putRemnantStocksbyID = async (req, res) => {
       message: "Blog not Found",
     });
   }
-  if (size === "0" || thickness === "0") {
+  if ((length && width === "0") || thickness === "0") {
     await RemnantStock.findByIdAndDelete(ID);
     return res.status(200).json({
       success: true,
@@ -72,7 +80,9 @@ const putRemnantStocksbyID = async (req, res) => {
     { _id: ID },
     {
       thickness,
-      size,
+      length,
+      width,
+      weight,
       quantity: 1,
       remarks,
       addedBy,
@@ -93,7 +103,7 @@ const getRemnantStocksbyID = async (req, res) => {
   const { ID } = req.params;
 
   const response = await RemnantStock.findById(ID)
-    .populate("orignalsheetid", "quantity _id size")
+    .populate("orignalsheetid", "quantity _id length width")
     .populate("addedBy", "_id name email");
   try {
     if (response) {

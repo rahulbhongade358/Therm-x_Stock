@@ -9,7 +9,8 @@ function UpdateRemnant() {
   const [user, setUser] = useState(null);
   const [updateRemnantStock, setUpdateRemnantStock] = useState({
     thickness: "",
-    size: "",
+    length: "",
+    width: "",
     quantity: "",
     remarks: "",
     addedBy: "",
@@ -21,7 +22,8 @@ function UpdateRemnant() {
   const validateForm = () => {
     if (
       !updateRemnantStock.thickness ||
-      !updateRemnantStock.size ||
+      !updateRemnantStock.length ||
+      !updateRemnantStock.width ||
       !updateRemnantStock.quantity ||
       !updateRemnantStock.companyname
     ) {
@@ -106,7 +108,8 @@ function UpdateRemnant() {
         <div className="p-5 space-y-3 sm:space-y-4 overflow-y-auto max-h-[65vh]">
           {[
             { label: "Thickness (mm)", key: "thickness", type: "number" },
-            { label: "Size (mm × mm)", key: "size", type: "text" },
+            { label: "Length (mm × mm)", key: "length", type: "text" },
+            { label: "Width (mm × mm)", key: "width", type: "text" },
             { label: "Quantity", key: "quantity", type: "number" },
             { label: "Remarks", key: "remarks", type: "text" },
             { label: "Company Name", key: "companyname", type: "text" },
