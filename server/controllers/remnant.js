@@ -4,8 +4,7 @@ import RemnantStock from "./../models/Remnant.js";
 const postRemnantStocks = async (req, res) => {
   const {
     thickness,
-    length,
-    width,
+    dimensions,
     shapeDescription,
     companyname,
     addedBy,
@@ -14,11 +13,14 @@ const postRemnantStocks = async (req, res) => {
     sheetCanvas,
   } = req.body;
   const density = 7850; // kg/m³ for steel
-  const weight = (length * width * thickness * density) / 1000000000;
+  const totalarea = dimensions.reduce(
+    (sum, dim) => sum + dim.length * dim.width,
+    0
+  );
+  const weight = (totalarea * thickness * density) / 1000000000;
   const newRemnantStock = new RemnantStock({
     thickness,
-    length,
-    width,
+    dimensions,
     weight,
     shapeDescription,
     companyname,

@@ -3,8 +3,12 @@ import { model, Schema } from "mongoose";
 const newRemnant = new Schema(
   {
     thickness: { type: Number, required: true },
-    length: { type: Number, required: true },
-    width: { type: Number, required: true },
+    dimensions: [
+      {
+        length: { type: Number, required: true },
+        width: { type: Number, required: true },
+      },
+    ],
     weight: { type: Number },
     quantity: { type: Number, required: true },
     lastUpdated: { type: Date, default: Date.now },

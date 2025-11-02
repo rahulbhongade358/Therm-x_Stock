@@ -8,13 +8,15 @@ import "react-loading-skeleton/dist/skeleton.css";
 const StockDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const [zoom, setZoom] = useState(false);
-  const [zoomImage, setZoomImage] = useState(null); // ✅ added
+  const [zoomImage, setZoomImage] = useState(null);
   const [stockData, setStockData] = useState(null);
   const [remnantData, setRemnantData] = useState(null);
   const [loadingStock, setLoadingStock] = useState(true);
   const [loadingRemnant, setLoadingRemnant] = useState(true);
 
+  // ✅ Fetch both Stock and Remnant Data
   const fetchData = async () => {
     try {
       const stockRes = await axios.get(
@@ -33,20 +35,27 @@ const StockDetails = () => {
     }
   };
 
+  // ✅ Delete function
   const deletesheet = async () => {
-    const Regulardel = await axios.delete(
-      `${import.meta.env.VITE_API_URL}/stock/${id}`
-    );
-    const remnantDel = await axios.delete(
-      `${import.meta.env.VITE_API_URL}/remnantstocks/${id}`
-    );
-    if (Regulardel || remnantDel) {
-      toast.success("sheet deleted successfully");
-      fetchData();
-      navigate("/allstocks");
+    try {
+      const Regulardel = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/stock/${id}`
+      );
+      const remnantDel = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/remnantstocks/${id}`
+      );
+      if (Regulardel || remnantDel) {
+        toast.success("Sheet deleted successfully");
+        fetchData();
+        navigate("/allstocks");
+      }
+    } catch (err) {
+      toast.error("Failed to delete sheet");
+      console.error(err);
     }
   };
 
+  // ✅ Zoom Canvas function
   const zoomCanva = (img) => {
     setZoom(true);
     setZoomImage(img);
@@ -65,6 +74,7 @@ const StockDetails = () => {
           Stock Details
         </h1>
 
+        {/* ---------- Regular Stock Section ---------- */}
         {loadingStock ? (
           <SkeletonTheme baseColor="#e5e7eb" highlightColor="#f3f4f6">
             <div className="space-y-4 p-4">
@@ -73,96 +83,51 @@ const StockDetails = () => {
               <Skeleton height={180} borderRadius={10} />
             </div>
           </SkeletonTheme>
-        ) : type === "regular" || type === "remnant" ? (
+        ) : type === "regular" ? (
           <div className="mb-8 relative">
-            <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
-              <span className="text-blue-600 text-2xl">📦</span>
-              {`${type.charAt(0).toUpperCase() + type.slice(1)} stock`}
+            <h2 className="text-xl font-semibold text-gray-800 text-center mb-6 border-b pb-2">
+              📦 Regular Stock
             </h2>
+
             <div
               className="absolute top-10 right-1.5 bg-red-600 hover:bg-red-500 text-white font-semibold p-2.5 rounded-xl shadow-md transition-all duration-200"
-              onClick={() => {
-                deletesheet();
-              }}
+              onClick={deletesheet}
             >
-              <button className="cursor-pointer ">delete</button>
+              <button className="cursor-pointer">Delete</button>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-gray-700">
               <p>
-                <span className="font-semibold text-gray-900">Thickness:</span>{" "}
-                {stockData.thickness} mm
+                <strong>Thickness:</strong> {stockData.thickness} mm
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Length:</span>{" "}
-                {stockData.length} mm
+                <strong>Length:</strong> {stockData.length} mm
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Width:</span>{" "}
-                {stockData.width} mm
+                <strong>Width:</strong> {stockData.width} mm
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Quantity:</span>{" "}
-                {stockData.quantity}
+                <strong>Quantity:</strong> {stockData.quantity}
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Sheet Type:</span>{" "}
-                {stockData.sheetType}
-              </p>
-              <p className="col-span-1 sm:col-span-2">
-                <span className="font-semibold text-gray-900">Remarks:</span>{" "}
-                {stockData.remarks || "—"}
+                <strong>Company:</strong> {stockData.companyname}
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Company:</span>{" "}
-                {stockData.companyname}
+                <strong>Remarks:</strong> {stockData.remarks || "—"}
               </p>
-              {stockData?.sheetType === "remnant" ? (
-                <div className="col-span-1 sm:col-span-2">
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition">
-                    <div className="flex-1">
-                      <p className="text-gray-700">
-                        <span className="font-semibold text-gray-900">
-                          Shape Description:
-                        </span>{" "}
-                        {stockData.shapeDescription || "—"}
-                      </p>
-                    </div>
-                    {stockData.sheetCanvas ? (
-                      <div>
-                        <img
-                          src={stockData.sheetCanvas}
-                          alt="Sheet Canvas"
-                          className="w-70 h-50 border border-gray-300 rounded-lg shadow-sm"
-                        />
-                        <button
-                          onClick={() => zoomCanva(stockData.sheetCanvas)} // ✅ pass image
-                          className="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-sm transition-all duration-200"
-                        >
-                          🔍 Zoom
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
-                        No Preview
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : null}
-              <p className="col-span-1 sm:col-span-2">
-                <span className="font-semibold text-gray-900">Added By:</span>{" "}
-                {stockData.addedBy?.name} ({stockData.addedBy?.email})
+              <p className="col-span-2">
+                <strong>Added By:</strong> {stockData.addedBy?.name} (
+                {stockData.addedBy?.email})
               </p>
-              <p className="col-span-1 sm:col-span-2 text-sm text-gray-500">
-                <span className="font-semibold text-gray-700">
-                  Last Updated:
-                </span>{" "}
+              <p className="text-sm text-gray-500 col-span-2">
+                <strong>Last Updated:</strong>{" "}
                 {new Date(stockData.updatedAt).toLocaleString()}
               </p>
             </div>
           </div>
         ) : null}
 
+        {/* ---------- Remnant Stock Section ---------- */}
         {loadingRemnant ? (
           <SkeletonTheme baseColor="#e5e7eb" highlightColor="#f3f4f6">
             <div className="space-y-4 p-4">
@@ -173,55 +138,58 @@ const StockDetails = () => {
           </SkeletonTheme>
         ) : remnantData?.sheetType === "remnant" ? (
           <div className="mb-8 relative">
-            <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2 mb-6 border-b pb-2">
-              <span className="text-blue-600 text-2xl">📦</span>
-              Remnant stock
+            <h2 className="text-xl font-semibold text-gray-800 text-center mb-6 border-b pb-2">
+              📦 Remnant Stock
             </h2>
+
             <div
               className="absolute top-10 right-1.5 bg-red-600 hover:bg-red-500 text-white font-semibold p-2.5 rounded-xl shadow-md transition-all duration-200"
-              onClick={() => {
-                deletesheet();
-              }}
+              onClick={deletesheet}
             >
-              <button className="cursor-pointer ">delete</button>
+              <button className="cursor-pointer">Delete</button>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-gray-700">
               <p>
-                <span className="font-semibold text-gray-900">Thickness:</span>{" "}
-                {remnantData.thickness} mm
+                <strong>Thickness:</strong> {remnantData.thickness} mm
+              </p>
+
+              {/* ✅ Show multiple dimensions */}
+              <div className="col-span-2 bg-gray-50 border rounded-xl p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  📏 Dimensions:
+                </h3>
+                {Array.isArray(remnantData.dimensions) &&
+                remnantData.dimensions.length > 0 ? (
+                  <ul className="list-disc list-inside space-y-1 text-gray-700">
+                    {remnantData.dimensions.map((dim, index) => (
+                      <li key={index}>
+                        <strong>L{index + 1}:</strong> {dim.length} mm &nbsp;
+                        <strong>W{index + 1}:</strong> {dim.width} mm
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>— No Dimensions Found —</p>
+                )}
+              </div>
+
+              <p>
+                <strong>Quantity:</strong> {remnantData.quantity}
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Length:</span>{" "}
-                {remnantData.length} mm
+                <strong>Remarks:</strong> {remnantData.remarks || "—"}
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Width:</span>{" "}
-                {remnantData.width} mm
+                <strong>Company:</strong> {remnantData.companyname}
               </p>
               <p>
-                <span className="font-semibold text-gray-900">Quantity:</span>{" "}
-                {remnantData.quantity}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">Remarks:</span>{" "}
-                {remnantData.remarks || "—"}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">Company:</span>{" "}
-                {remnantData.companyname}
-              </p>
-              <p>
-                <span className="font-semibold text-gray-900">
-                  Shape Description:
-                </span>{" "}
+                <strong>Shape Description:</strong>{" "}
                 {remnantData.shapeDescription || "—"}
               </p>
-              <p className="col-span-1 sm:col-span-2">
-                <span className="font-semibold text-gray-900">Added By:</span>{" "}
-                {remnantData.addedBy?.name} ({remnantData.addedBy?.email})
-              </p>
+
               {remnantData.sheetCanvas ? (
-                <div>
+                <div className="col-span-2 flex flex-col items-center">
                   <img
                     src={remnantData.sheetCanvas}
                     alt="Sheet Canvas"
@@ -235,20 +203,30 @@ const StockDetails = () => {
                   </button>
                 </div>
               ) : (
-                <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                <div className="col-span-2 w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
                   No Preview
                 </div>
               )}
+
+              <p className="col-span-2">
+                <strong>Added By:</strong> {remnantData.addedBy?.name} (
+                {remnantData.addedBy?.email})
+              </p>
+              <p className="text-sm text-gray-500 col-span-2">
+                <strong>Last Updated:</strong>{" "}
+                {new Date(remnantData.updatedAt).toLocaleString()}
+              </p>
             </div>
           </div>
         ) : null}
+
         {zoom && (
-          <div className="fixed inset-0 bg-gray-400 bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 transition-all duration-300">
+          <div className="fixed inset-0 bg-gray-400 bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="relative">
               <img
                 src={zoomImage}
                 alt="Zoomed Sheet Canvas"
-                className="max-w-[90vw] max-h-[100vh] rounded-xl shadow-2xl transform scale-100 transition-transform duration-300"
+                className="max-w-[90vw] max-h-[100vh] rounded-xl shadow-2xl"
               />
               <button
                 onClick={() => setZoom(false)}
@@ -269,8 +247,7 @@ const StockDetails = () => {
           </button>
         </div>
       </div>
-
-      <Toaster className="position top right" />
+      <Toaster />
     </div>
   );
 };

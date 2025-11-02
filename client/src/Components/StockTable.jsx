@@ -56,26 +56,48 @@ function StockTable() {
     Stocks();
   }, [logginUser]);
 
+  // ✅ PDF Export Function
   const exportToPDF = () => {
     const doc = new jsPDF();
-    doc.text(" Therm-x Stock Report", 100, 20, {
+
+    doc.text("Therm-x Stock Report", 100, 20, {
       align: "center",
-      width: 150,
-      fontSize: 20,
+      width: 100,
+      fontSize: 18,
       fontWeight: "bold",
       textColor: [22, 160, 133],
     });
 
-    const allData = [...stocks, ...remnantstocks].map((s) => [
-      s.thickness,
-      s.length,
-      s.width,
-      s.weight,
-      s.quantity,
-      s.companyname,
-      s.sheetType,
-      s.lastUpdated ? new Date(s.lastUpdated).toLocaleString("en-IN") : "—",
-    ]);
+    // Combine both normal and remnant stock data
+    const allData = [...stocks, ...remnantstocks].map((s) => {
+      let lengthDisplay = "—";
+      let widthDisplay = "—";
+
+      if (Array.isArray(s.dimensions) && s.dimensions.length > 0) {
+        // Join all length-width pairs in one line (like L1:100 W1:50 | L2:80 W2:40)
+        lengthDisplay = s.dimensions
+          .map((d, i) => `L${i + 1}:${d.length}`)
+          .join(" | ");
+        widthDisplay = s.dimensions
+          .map((d, i) => `W${i + 1}:${d.width}`)
+          .join(" | ");
+      } else {
+        // Normal sheets
+        lengthDisplay = s.length || "—";
+        widthDisplay = s.width || "—";
+      }
+
+      return [
+        s.thickness,
+        lengthDisplay,
+        widthDisplay,
+        s.weight || "—",
+        s.quantity,
+        s.companyname,
+        s.sheetType,
+        s.lastUpdated ? new Date(s.lastUpdated).toLocaleString("en-IN") : "—",
+      ];
+    });
 
     autoTable(doc, {
       head: [
@@ -91,30 +113,53 @@ function StockTable() {
         ],
       ],
       body: allData,
-      startY: 35,
-      styles: { fontSize: 12, cellPadding: 3 },
+      startY: 20,
+      styles: { fontSize: 10, cellPadding: 3 },
       headStyles: {
         fillColor: [22, 160, 133],
         textColor: 255,
         fontStyle: "bold",
       },
+      columnStyles: {
+        1: { cellWidth: 25 }, // Length
+        2: { cellWidth: 25 }, // Width
+      },
     });
 
     doc.save("Stock_Report.pdf");
   };
+
+  // ✅ Excel Export Function
   const exportToExcel = () => {
-    const allData = [...stocks, ...remnantstocks].map((s) => ({
-      Thickness: s.thickness,
-      Length: s.length,
-      Width: s.width,
-      Weight: s.weight,
-      Quantity: s.quantity,
-      Company: s.companyname,
-      Type: s.sheetType,
-      "Last Updated": s.lastUpdated
-        ? new Date(s.lastUpdated).toLocaleString("en-IN")
-        : "—",
-    }));
+    const allData = [...stocks, ...remnantstocks].map((s) => {
+      let lengthDisplay = "—";
+      let widthDisplay = "—";
+
+      if (Array.isArray(s.dimensions) && s.dimensions.length > 0) {
+        lengthDisplay = s.dimensions
+          .map((d, i) => `L${i + 1}:${d.length}`)
+          .join(" | ");
+        widthDisplay = s.dimensions
+          .map((d, i) => `W${i + 1}:${d.width}`)
+          .join(" | ");
+      } else {
+        lengthDisplay = s.length || "—";
+        widthDisplay = s.width || "—";
+      }
+
+      return {
+        Thickness: s.thickness,
+        Lengths: lengthDisplay,
+        Widths: widthDisplay,
+        Weight: s.weight || "—",
+        Quantity: s.quantity,
+        Company: s.companyname,
+        Type: s.sheetType,
+        "Last Updated": s.lastUpdated
+          ? new Date(s.lastUpdated).toLocaleString("en-IN")
+          : "—",
+      };
+    });
 
     const worksheet = XLSX.utils.json_to_sheet(allData);
     const workbook = XLSX.utils.book_new();
@@ -369,7 +414,10 @@ function StockTable() {
                       to={`/stockdetails/${s._id}`}
                       className="block w-full h-full"
                     >
-                      {s.length}
+                      {Array.isArray(s.dimensions) && s.dimensions.length > 0
+                        ? s.dimensions[0].length
+                        : s.length || "—"}
+                      ... mm
                     </Link>
                   </td>
                   <td className="px-4 py-2">
@@ -377,9 +425,13 @@ function StockTable() {
                       to={`/stockdetails/${s._id}`}
                       className="block w-full h-full"
                     >
-                      {s.width}
+                      {Array.isArray(s.dimensions) && s.dimensions.length > 0
+                        ? s.dimensions[0].width
+                        : s.width || "—"}{" "}
+                      ... mm
                     </Link>
                   </td>
+
                   <td className="px-4 py-2 font-semibold">
                     <Link
                       to={`/stockdetails/${s._id}`}
