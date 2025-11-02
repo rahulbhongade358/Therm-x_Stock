@@ -302,7 +302,7 @@ function StockTable() {
                         : Array.isArray(s.dimensions) && s.dimensions.length > 0
                         ? s.dimensions.map(
                             (d, i) =>
-                              `${"L" + (i + 1)}:${d.length}, ${
+                              `${"L" + (i + 1)}:${d.length}${
                                 i !== s.dimensions.length - 1 ? ", " : ""
                               }`
                           )
@@ -319,7 +319,7 @@ function StockTable() {
                         : Array.isArray(s.dimensions) && s.dimensions.length > 0
                         ? s.dimensions.map(
                             (d, i) =>
-                              `${"W" + (i + 1)}:${d.width}, ${
+                              `${"W" + (i + 1)}:${d.width}${
                                 i !== s.dimensions.length - 1 ? ", " : ""
                               }`
                           )
@@ -433,9 +433,13 @@ function StockTable() {
                       className="block w-full h-full"
                     >
                       {Array.isArray(s.dimensions) && s.dimensions.length > 0
-                        ? s.dimensions[0].length
-                        : s.length || "—"}
-                      ... mm
+                        ? s.dimensions.map(
+                            (d, i) =>
+                              `${"L" + (i + 1)}:${d.length} ${
+                                i !== s.dimensions.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "—"}
                     </Link>
                   </td>
                   <td className="px-4 py-2">
@@ -444,9 +448,13 @@ function StockTable() {
                       className="block w-full h-full"
                     >
                       {Array.isArray(s.dimensions) && s.dimensions.length > 0
-                        ? s.dimensions[0].width
-                        : s.width || "—"}{" "}
-                      ... mm
+                        ? s.dimensions.map(
+                            (d, i) =>
+                              `${"W" + (i + 1)}:${d.width}${
+                                i !== s.dimensions.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "—"}
                     </Link>
                   </td>
 

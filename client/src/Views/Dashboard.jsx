@@ -180,8 +180,18 @@ function Dashboard() {
                       className="border-b transition-all duration-150 hover:bg-gray-50"
                     >
                       <td className="px-3 sm:px-4 py-2">{s.thickness}</td>
-                      <td className="px-3 sm:px-4 py-2">{s.length}</td>
-                      <td className="px-3 sm:px-4 py-2">{s.width}</td>
+                      <td className="px-3 sm:px-4 py-2">
+                        {Array.isArray(s.dimensions) && s.dimensions.length > 0
+                          ? s.dimensions[0].length
+                          : s.length || "—"}
+                        ... mm
+                      </td>
+                      <td className="px-3 sm:px-4 py-2">
+                        {Array.isArray(s.dimensions) && s.dimensions.length > 0
+                          ? s.dimensions[0].width
+                          : s.width || "—"}
+                        ... mm
+                      </td>
                       <td className="px-3 sm:px-4 py-2 font-semibold">
                         {s.quantity}
                       </td>

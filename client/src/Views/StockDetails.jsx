@@ -15,7 +15,8 @@ const StockDetails = () => {
   const [remnantData, setRemnantData] = useState(null);
   const [loadingStock, setLoadingStock] = useState(true);
   const [loadingRemnant, setLoadingRemnant] = useState(true);
-
+  console.log("Stock Data:", stockData);
+  console.log("Remnant Data:", remnantData);
   // ✅ Fetch both Stock and Remnant Data
   const fetchData = async () => {
     try {
@@ -202,6 +203,9 @@ const StockDetails = () => {
                 ) : (
                   <p>— No Dimensions Found —</p>
                 )}
+                <p>
+                  <strong>Weight:</strong> {remnantData.weight} kg
+                </p>
               </div>
 
               <p>
