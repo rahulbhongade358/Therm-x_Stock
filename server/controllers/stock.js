@@ -7,6 +7,7 @@ const postStocks = async (req, res) => {
     thickness,
     length,
     width,
+    dimensions = [],
     quantity,
     approxArea,
     shapeDescription,
@@ -15,13 +16,26 @@ const postStocks = async (req, res) => {
     remarks,
     sheetCanvas,
   } = req.body;
+
   const density = 7850; // kg/m³ for steel
-  const weight = (length * width * thickness * density) / 1000000000;
+  let weight = 0;
+
+  if (sheetType === "regular") {
+    weight = (length * width * thickness * density) / 1000000000;
+  } else if (sheetType === "remnant" && dimensions.length > 0) {
+    dimensions.forEach((d) => {
+      if (d.length && d.width) {
+        weight += (d.length * d.width * thickness * density) / 1000000000;
+      }
+    });
+  }
+
   const newStock = new Stock({
     sheetType,
     thickness,
-    length,
-    width,
+    length: sheetType === "regular" ? length : undefined,
+    width: sheetType === "regular" ? width : undefined,
+    dimensions: sheetType === "remnant" ? dimensions : undefined,
     weight,
     quantity,
     approxArea,
@@ -31,14 +45,16 @@ const postStocks = async (req, res) => {
     remarks,
     sheetCanvas,
   });
+
   const saveStock = await newStock.save();
 
   res.status(201).json({
     success: true,
     data: saveStock,
-    message: "Stock is saved Successfully",
+    message: "Stock is saved successfully",
   });
 };
+
 const getStocks = async (req, res) => {
   const stocks = await Stock.find()
     .populate("addedBy", "_id name email")

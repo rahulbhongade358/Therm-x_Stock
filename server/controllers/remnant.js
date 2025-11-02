@@ -54,8 +54,7 @@ const putRemnantStocksbyID = async (req, res) => {
   const { ID } = req.params;
   const {
     thickness,
-    length,
-    width,
+    dimensions,
     remarks,
     addedBy,
     companyname,
@@ -63,7 +62,11 @@ const putRemnantStocksbyID = async (req, res) => {
     sheetCanvas,
   } = req.body;
   const density = 7850; // kg/m³ for steel
-  const weight = (length * width * thickness * density) / 1000000000;
+  const totalarea = dimensions.reduce(
+    (sum, dim) => sum + dim.length * dim.width,
+    0
+  );
+  const weight = (totalarea * thickness * density) / 1000000000;
   const existingStock = await RemnantStock.findOne({ _id: ID });
   if (!existingStock) {
     return res.status(404).json({
@@ -82,8 +85,7 @@ const putRemnantStocksbyID = async (req, res) => {
     { _id: ID },
     {
       thickness,
-      length,
-      width,
+      dimensions,
       weight,
       quantity: 1,
       remarks,

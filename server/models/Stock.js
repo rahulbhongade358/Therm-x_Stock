@@ -3,8 +3,24 @@ import { model, Schema } from "mongoose";
 const stockSchema = new Schema(
   {
     thickness: { type: Number, required: true },
-    length: { type: Number, required: true },
-    width: { type: Number, required: true },
+    length: {
+      type: Number,
+      required: function () {
+        return this.sheetType === "regular";
+      },
+    },
+    width: {
+      type: Number,
+      required: function () {
+        return this.sheetType === "regular";
+      },
+    },
+    dimensions: [
+      {
+        length: { type: Number },
+        width: { type: Number },
+      },
+    ],
     weight: { type: Number },
     quantity: { type: Number, required: true },
     lastUpdated: { type: Date, default: Date.now },
