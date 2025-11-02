@@ -297,7 +297,16 @@ function StockTable() {
                       to={`/stockdetails/${s._id}`}
                       className="block w-full h-full"
                     >
-                      {s.length}
+                      {s.sheetType === "regular"
+                        ? s.length
+                        : Array.isArray(s.dimensions) && s.dimensions.length > 0
+                        ? s.dimensions.map(
+                            (d, i) =>
+                              `${"L" + (i + 1)}:${d.length}, ${
+                                i !== s.dimensions.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "—"}
                     </Link>
                   </td>
                   <td className="px-4 py-2">
@@ -305,7 +314,16 @@ function StockTable() {
                       to={`/stockdetails/${s._id}`}
                       className="block w-full h-full"
                     >
-                      {s.width}
+                      {s.sheetType === "regular"
+                        ? s.width
+                        : Array.isArray(s.dimensions) && s.dimensions.length > 0
+                        ? s.dimensions.map(
+                            (d, i) =>
+                              `${"W" + (i + 1)}:${d.width}, ${
+                                i !== s.dimensions.length - 1 ? ", " : ""
+                              }`
+                          )
+                        : "—"}
                     </Link>
                   </td>
                   <td className="px-4 py-2 font-semibold">

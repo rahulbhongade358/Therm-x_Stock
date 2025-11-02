@@ -34,7 +34,6 @@ const StockDetails = () => {
       console.error("Error fetching data:", err);
     }
   };
-
   // ✅ Delete function
   const deletesheet = async () => {
     try {
@@ -83,10 +82,10 @@ const StockDetails = () => {
               <Skeleton height={180} borderRadius={10} />
             </div>
           </SkeletonTheme>
-        ) : type === "regular" ? (
+        ) : type === "regular" || type === "remnant" ? (
           <div className="mb-8 relative">
             <h2 className="text-xl font-semibold text-gray-800 text-center mb-6 border-b pb-2">
-              📦 Regular Stock
+              📦 {type === "regular" ? "Regular" : "Remnant"} Stock
             </h2>
 
             <div
@@ -100,12 +99,43 @@ const StockDetails = () => {
               <p>
                 <strong>Thickness:</strong> {stockData.thickness} mm
               </p>
-              <p>
-                <strong>Length:</strong> {stockData.length} mm
-              </p>
-              <p>
-                <strong>Width:</strong> {stockData.width} mm
-              </p>
+
+              {type === "regular" ? (
+                <>
+                  <p>
+                    <strong>Length:</strong> {stockData.length} mm
+                  </p>
+                  <p>
+                    <strong>Width:</strong> {stockData.width} mm
+                  </p>
+                  <p>
+                    <strong>Weight:</strong> {stockData.weight} kg
+                  </p>
+                </>
+              ) : (
+                <div className="col-span-2 bg-gray-50 border rounded-xl p-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">
+                    📏 Dimensions:
+                  </h3>
+                  {Array.isArray(stockData.dimensions) &&
+                  stockData.dimensions.length > 0 ? (
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      {stockData.dimensions.map((dim, index) => (
+                        <li key={index}>
+                          <strong>L{index + 1}:</strong> {dim.length} mm &nbsp;
+                          <strong>W{index + 1}:</strong> {dim.width} mm
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>— No Dimensions Found —</p>
+                  )}
+                  <p>
+                    <strong>Weight:</strong> {stockData.weight} kg
+                  </p>
+                </div>
+              )}
+
               <p>
                 <strong>Quantity:</strong> {stockData.quantity}
               </p>
@@ -220,6 +250,7 @@ const StockDetails = () => {
           </div>
         ) : null}
 
+        {/* ---------- Zoom Canvas Modal ---------- */}
         {zoom && (
           <div className="fixed inset-0 bg-gray-400 bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="relative">
