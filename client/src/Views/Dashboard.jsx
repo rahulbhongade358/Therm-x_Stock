@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../Components/Sidebar";
 import Navbar from "../Components/Navbar";
-import AddStockModal from "../Components/AddStockModal";
-import AddStockRemnantModal from "../Components/AddRemnantStockModal ";
+import { Link } from "react-router";
 import axios from "axios";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -10,8 +9,6 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { getCurrentuser } from "../utils/utils";
 
 function Dashboard() {
-  const [showModal, setShowModal] = useState(false);
-  const [showRemnantModal, setShowRemnantModal] = useState(false);
   const [remnantstocks, setRemnantStocks] = useState([]);
   const [logginUser, setLogginUser] = useState(null);
   const [stocks, setStocks] = useState([]);
@@ -101,17 +98,11 @@ function Dashboard() {
             ) : (
               logginUser && (
                 <div>
-                  <button
-                    onClick={() => setShowModal(true)}
-                    className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
-                  >
-                    + Add Stock
+                  <button className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition">
+                    <Link to="/addstocks">+ Add Stock</Link>
                   </button>
-                  <button
-                    onClick={() => setShowRemnantModal(true)}
-                    className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition"
-                  >
-                    + Add Remnant
+                  <button className="mr-3 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-5 py-2 rounded-lg shadow-md font-medium text-sm sm:text-base transition">
+                    <Link to="/addremnantstocks">+ Add Remnant Stock</Link>
                   </button>
                   <button
                     className={`${
@@ -280,10 +271,10 @@ function Dashboard() {
             </div>
           </div>
 
-          {showModal && <AddStockModal onClose={() => setShowModal(false)} />}
+          {/* {showModal && <AddStockModal onClose={() => setShowModal(false)} />}
           {showRemnantModal && (
             <AddStockRemnantModal onClose={() => setShowRemnantModal(false)} />
-          )}
+          )} */}
         </main>
       </div>
     </div>

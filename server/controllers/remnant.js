@@ -2,52 +2,86 @@ import Stock from "../models/Stock.js";
 import RemnantStock from "./../models/Remnant.js";
 
 const postRemnantStocks = async (req, res) => {
-  const {
-    thickness,
-    dimensions,
-    shapeDescription,
-    companyname,
-    addedBy,
-    orignalsheetid,
-    remarks,
-    sheetCanvas,
-  } = req.body;
-  const density = 7850; // kg/m³ for steel
-  const totalarea = dimensions.reduce(
-    (sum, dim) => sum + dim.length * dim.width,
-    0
-  );
-  const weight = (totalarea * thickness * density) / 1000000000;
-  const newRemnantStock = new RemnantStock({
-    thickness,
-    dimensions,
-    weight,
-    shapeDescription,
-    companyname,
-    addedBy,
-    orignalsheetid,
-    remarks,
-    sheetType: "remnant",
-    quantity: 1,
-    sheetCanvas,
-  });
-  const saveRemnantStock = await newRemnantStock.save();
+  try {
+    const {
+      thickness,
+      dimensions,
+      shapeDescription,
+      companyname,
+      addedBy,
+      orignalsheetid,
+      remarks,
+      sheetCanvas,
+    } = req.body;
 
-  const updatedOriginal = await Stock.findByIdAndUpdate(
-    orignalsheetid,
-    {
-      $inc: { quantity: -1 },
-    },
-    { new: true }
-  );
-  if (updatedOriginal && updatedOriginal.quantity <= 0) {
-    await Stock.findByIdAndDelete(orignalsheetid);
+    // ✅ Calculate total area and weight (for steel)
+    const density = 7850; // kg/m³ for steel
+    const totalArea = dimensions.reduce(
+      (sum, dim) => sum + Number(dim.length || 0) * Number(dim.width || 0),
+      0
+    );
+
+    const weight = (totalArea * Number(thickness) * density) / 1_000_000_000; // mm³ → m³
+
+    // ✅ Create new remnant record
+    const newRemnantStock = new RemnantStock({
+      thickness,
+      dimensions,
+      weight,
+      shapeDescription,
+      companyname,
+      addedBy,
+      orignalsheetid,
+      remarks,
+      sheetType: "remnant",
+      quantity: 1,
+      sheetCanvas,
+    });
+
+    const savedRemnant = await newRemnantStock.save();
+
+    // ✅ Update original sheet: decrease quantity and adjust weight
+    if (orignalsheetid) {
+      const originalSheet = await Stock.findById(orignalsheetid);
+
+      if (originalSheet) {
+        const updatedQuantity = Math.max(originalSheet.quantity - 1, 0);
+        const updatedWeight =
+          (originalSheet.length *
+            originalSheet.width *
+            thickness *
+            density *
+            updatedQuantity) /
+          1000000000;
+        await Stock.findByIdAndUpdate(
+          orignalsheetid,
+          {
+            $set: { weight: updatedWeight, quantity: updatedQuantity },
+          },
+          { new: true }
+        );
+
+        // ✅ If quantity becomes 0 → delete the original stock
+        if (updatedQuantity <= 0) {
+          await Stock.findByIdAndDelete(orignalsheetid);
+        }
+      }
+    }
+
+    // ✅ Send response
+    res.status(201).json({
+      success: true,
+      data: savedRemnant,
+      message: "Remnant stock saved successfully!",
+    });
+  } catch (error) {
+    console.error("Error posting remnant stock:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to save remnant stock.",
+      error: error.message,
+    });
   }
-  res.status(201).json({
-    success: true,
-    data: saveRemnantStock,
-    message: "Stock is saved Successfully",
-  });
 };
 
 const putRemnantStocksbyID = async (req, res) => {
@@ -61,27 +95,42 @@ const putRemnantStocksbyID = async (req, res) => {
     shapeDescription,
     sheetCanvas,
   } = req.body;
+
   const density = 7850; // kg/m³ for steel
-  const totalarea = dimensions.reduce(
+
+  // ✅ Calculate total area
+  const totalArea = dimensions.reduce(
     (sum, dim) => sum + dim.length * dim.width,
     0
   );
-  const weight = (totalarea * thickness * density) / 1000000000;
+
+  // ✅ Calculate weight
+  const weight = (totalArea * thickness * density) / 1_000_000_000;
+
+  // ✅ Find existing stock
   const existingStock = await RemnantStock.findOne({ _id: ID });
   if (!existingStock) {
     return res.status(404).json({
       success: false,
-      message: "Blog not Found",
+      message: "Remnant not found",
     });
   }
-  if ((length && width === "0") || thickness === "0") {
+
+  // ✅ Check if remnant is fully used
+  const isFullyUsed =
+    dimensions.every((dim) => dim.length <= 100 || dim.width <= 100) ||
+    thickness === 0;
+
+  if (isFullyUsed) {
     await RemnantStock.findByIdAndDelete(ID);
     return res.status(200).json({
       success: true,
       message: "Remnant fully used — record deleted automatically",
     });
   }
-  const updatestock = await RemnantStock.findOneAndUpdate(
+
+  // ✅ Update remnant data
+  const updatedStock = await RemnantStock.findOneAndUpdate(
     { _id: ID },
     {
       thickness,
@@ -94,12 +143,14 @@ const putRemnantStocksbyID = async (req, res) => {
       shapeDescription,
       sheetType: "remnant",
       sheetCanvas,
-    }
+    },
+    { new: true }
   );
+
   return res.status(200).json({
     success: true,
     message: "Stock updated successfully",
-    data: updatestock,
+    data: updatedStock,
   });
 };
 

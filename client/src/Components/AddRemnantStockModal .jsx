@@ -88,10 +88,14 @@ function AddRemnantStockModal({ onClose }) {
       setIsSubmitting(true);
       const sheetData = localStorage.getItem("RemnantStockForm");
       const restoredStock = sheetData ? JSON.parse(sheetData) : remnantStock;
+      const dimensionsData = localStorage.getItem("RemnantStockDimensions");
+      const restoredDimensions = dimensionsData
+        ? JSON.parse(dimensionsData)
+        : dimensions;
 
       const payload = {
         ...restoredStock,
-        dimensions,
+        dimensions: restoredDimensions,
         weight: calculatedWeight,
         sheetCanvas: remnantCanvasData,
         addedBy: user?._id,
@@ -122,13 +126,28 @@ function AddRemnantStockModal({ onClose }) {
   // ✅ Fetch all regular sheets
   const fetchSheets = async () => {
     try {
-      const searchResponse = await axios.get(
+      const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/allstocks`
       );
-      const formatted = searchResponse.data.data.map((sheet) => ({
+
+      const allSheets = response.data.data;
+
+      // ✅ Filter only regular sheets
+      const regularSheets = allSheets.filter(
+        (sheet) => sheet.sheetType === "regular"
+      );
+
+      // ✅ Format dropdown data
+      const formatted = regularSheets.map((sheet) => ({
         value: sheet._id,
-        label: `${sheet.thickness}mm × ${sheet.length}mm × ${sheet.width}mm (${sheet.companyname})`,
+        label: `Thk: ${sheet.thickness}mm | ${sheet.length}×${sheet.width}mm | Qty: ${sheet.quantity} | ${sheet.companyname}`,
+        thickness: sheet.thickness,
+        length: sheet.length,
+        width: sheet.width,
+        quantity: sheet.quantity,
       }));
+
+      // ✅ Update dropdown options
       setSheetOptions(formatted);
     } catch (error) {
       console.error("Error fetching sheets:", error);
@@ -142,150 +161,200 @@ function AddRemnantStockModal({ onClose }) {
     if (remnantForm) {
       setRemnantStock(JSON.parse(remnantForm));
     }
+    const remnantDimensions = localStorage.getItem("RemnantStockDimensions");
+    if (remnantDimensions) {
+      setDimensions(JSON.parse(remnantDimensions));
+    }
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 w-[95%] sm:w-[480px] max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 text-gray-800 p-10">
+      <div className="max-w-5xl mx-auto space-y-10">
+        <h1 className="text-4xl font-bold text-center text-blue-700">
           Add Remnant Stock
-        </h2>
+        </h1>
 
-        {/* Select Original Sheet */}
-        <label className="block text-gray-700 font-medium mb-2">
-          Select Original Sheet
-        </label>
-        <Select
-          options={sheetOptions}
-          value={
-            sheetOptions.find(
-              (opt) => opt.value === remnantStock.orignalsheetid
-            ) || null
-          }
-          onChange={(selected) =>
-            setRemnantStock({
-              ...remnantStock,
-              orignalsheetid: selected.value,
-            })
-          }
-          placeholder="Search or select original sheet..."
-          isSearchable
-        />
+        {/* --- Sheet Selection Section --- */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Select Original Sheet
+          </h2>
+          <Select
+            options={sheetOptions}
+            value={
+              sheetOptions.find(
+                (opt) => opt.value === remnantStock.orignalsheetid
+              ) || null
+            }
+            onChange={(selected) =>
+              setRemnantStock({
+                ...remnantStock,
+                orignalsheetid: selected.value,
+              })
+            }
+            placeholder="Search or select original sheet..."
+            isSearchable
+          />
+        </section>
 
-        <input
-          type="number"
-          placeholder="Thickness (mm)"
-          className="border border-gray-300 px-3 py-2 rounded-md mt-3 w-full"
-          value={remnantStock.thickness}
-          onChange={(e) =>
-            setRemnantStock({ ...remnantStock, thickness: e.target.value })
-          }
-        />
+        {/* --- Thickness + Dimensions --- */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Sheet Details
+          </h2>
 
-        {/* Dynamic Dimensions */}
-        <label className="block text-gray-700 font-medium mt-3">
-          Add Dimensions (mm):
-        </label>
-        {dimensions.map((dim, index) => (
-          <div key={index} className="flex gap-2 mt-2">
+          <div className="text-lg">
+            <p className="mb-3">
+              Thickness:{" "}
+              <input
+                type="number"
+                placeholder="mm"
+                className="ml-2 px-3 py-1 rounded-md border border-gray-300 w-24 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={remnantStock.thickness}
+                onChange={(e) =>
+                  setRemnantStock({
+                    ...remnantStock,
+                    thickness: e.target.value,
+                  })
+                }
+              />
+            </p>
+
+            <p className="font-medium">Dimensions (mm):</p>
+            <div className="space-y-2 mt-2">
+              {dimensions.map((dim, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span className="text-gray-600">Set {index + 1}:</span>
+                  <input
+                    type="number"
+                    placeholder="Length"
+                    className="border border-gray-300 rounded-md px-3 py-1 w-28 focus:ring-2 focus:ring-blue-400"
+                    value={dim.length}
+                    onChange={(e) =>
+                      handleDimensionChange(index, "length", e.target.value)
+                    }
+                  />
+                  <input
+                    type="number"
+                    placeholder="Width"
+                    className="border border-gray-300 rounded-md px-3 py-1 w-28 focus:ring-2 focus:ring-blue-400"
+                    value={dim.width}
+                    onChange={(e) =>
+                      handleDimensionChange(index, "width", e.target.value)
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={addNewDimension}
+              className="mt-3 text-blue-600 hover:text-blue-800 text-sm"
+            >
+              + Add More Dimensions
+            </button>
+          </div>
+        </section>
+
+        {/* --- Area and Weight --- */}
+        <section className="bg-white p-5 rounded-xl shadow-sm">
+          <h2 className="text-xl font-semibold mb-2">Preview Calculations</h2>
+          <p>
+            <strong>Total Area:</strong> {calculateTotalArea()} mm²
+          </p>
+          <p>
+            <strong>Estimated Weight:</strong> {calculatedWeight} kg
+          </p>
+        </section>
+
+        {/* --- Additional Info --- */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Additional Information
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <span className="font-medium">Company:</span>
+              <input
+                type="text"
+                placeholder="Company Name"
+                className="ml-2 border-b border-gray-400 focus:border-blue-500 bg-transparent outline-none w-full"
+                value={remnantStock.companyname}
+                onChange={(e) =>
+                  setRemnantStock({
+                    ...remnantStock,
+                    companyname: e.target.value,
+                  })
+                }
+              />
+            </div>
+            <div>
+              <span className="font-medium">Remarks:</span>
+              <input
+                type="text"
+                placeholder="Remarks"
+                className="ml-2 border-b border-gray-400 focus:border-blue-500 bg-transparent outline-none w-full"
+                value={remnantStock.remarks}
+                onChange={(e) =>
+                  setRemnantStock({ ...remnantStock, remarks: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <span className="font-medium">Shape Description:</span>
             <input
-              type="number"
-              placeholder={`Length ${index + 1}`}
-              className="border border-gray-300 px-3 py-2 rounded-md w-1/2"
-              value={dim.length}
+              type="text"
+              placeholder="Describe the shape..."
+              className="ml-2 border-b border-gray-400 focus:border-blue-500 bg-transparent outline-none w-full"
+              value={remnantStock.shapeDescription}
               onChange={(e) =>
-                handleDimensionChange(index, "length", e.target.value)
-              }
-            />
-            <input
-              type="number"
-              placeholder={`Width ${index + 1}`}
-              className="border border-gray-300 px-3 py-2 rounded-md w-1/2"
-              value={dim.width}
-              onChange={(e) =>
-                handleDimensionChange(index, "width", e.target.value)
+                setRemnantStock({
+                  ...remnantStock,
+                  shapeDescription: e.target.value,
+                })
               }
             />
           </div>
-        ))}
-        <button
-          onClick={addNewDimension}
-          className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
-        >
-          + Add More Dimensions
-        </button>
+        </section>
 
-        {/* Weight Preview */}
-        <p className="mt-4 text-gray-700">
-          <strong>Total Area:</strong> {calculateTotalArea()} mm²
-        </p>
-        <p className="text-gray-700">
-          <strong>Estimated Weight:</strong> {calculatedWeight} kg
-        </p>
+        {/* --- Canvas Section --- */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Shape Drawing
+          </h2>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <button
+              onClick={handleRemnantDrawShape}
+              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            >
+              Draw Shape
+            </button>
 
-        {/* Other Inputs */}
-        <input
-          type="text"
-          placeholder="Company Name"
-          className="border border-gray-300 px-3 py-2 rounded-md w-full mt-3"
-          value={remnantStock.companyname}
-          onChange={(e) =>
-            setRemnantStock({ ...remnantStock, companyname: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Remarks"
-          className="border border-gray-300 px-3 py-2 rounded-md w-full mt-3"
-          value={remnantStock.remarks}
-          onChange={(e) =>
-            setRemnantStock({ ...remnantStock, remarks: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Shape Description"
-          className="border border-gray-300 px-3 py-2 rounded-md w-full mt-3"
-          value={remnantStock.shapeDescription}
-          onChange={(e) =>
-            setRemnantStock({
-              ...remnantStock,
-              shapeDescription: e.target.value,
-            })
-          }
-        />
-
-        {/* Canvas + Preview */}
-        <label className="text-sm font-semibold mt-3">Draw Shape:</label>
-        <div className="max-w-4xl mx-auto p-4">
-          <button
-            onClick={handleRemnantDrawShape}
-            className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-          >
-            Draw Shape
-          </button>
-        </div>
-        <div>
-          <h2>Preview:</h2>
-          {remnantCanvasData ? (
-            <img
-              src={remnantCanvasData}
-              alt="Sheet Canvas"
-              className="w-70 h-50 border border-gray-300 rounded-lg shadow-sm"
-            />
-          ) : (
-            <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
-              No Preview
+            <div>
+              <h3 className="font-medium mb-2">Preview:</h3>
+              {remnantCanvasData ? (
+                <img
+                  src={remnantCanvasData}
+                  alt="Sheet Canvas"
+                  className="w-80 h-auto border border-gray-300 rounded-lg shadow-sm"
+                />
+              ) : (
+                <div className="w-80 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                  No Preview
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        </section>
 
-        {/* Buttons */}
-        <div className="flex justify-between mt-4">
+        {/* --- Action Buttons --- */}
+        <section className="flex justify-center gap-6 pt-6 border-t">
           <button
             type="button"
-            className="w-1/2 mr-2 px-4 py-2 rounded-lg border border-gray-400 hover:bg-gray-100 transition"
-            onClick={onClose}
+            className="px-6 py-2 rounded-lg border border-gray-400 hover:bg-gray-100 transition"
+            onClick={() => navigate("/")}
             disabled={isSubmitting}
           >
             Cancel
@@ -293,7 +362,7 @@ function AddRemnantStockModal({ onClose }) {
           <button
             onClick={addstock}
             disabled={isSubmitting}
-            className={`w-1/2 ml-2 px-4 py-2 rounded-lg font-semibold text-white transition ${
+            className={`px-6 py-2 rounded-lg font-semibold text-white transition ${
               isSubmitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -301,8 +370,9 @@ function AddRemnantStockModal({ onClose }) {
           >
             {isSubmitting ? "Saving..." : "Save"}
           </button>
-        </div>
+        </section>
       </div>
+
       <Toaster position="top-right" />
     </div>
   );

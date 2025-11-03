@@ -25,7 +25,8 @@ const postStocks = async (req, res) => {
   } else if (sheetType === "remnant" && dimensions.length > 0) {
     dimensions.forEach((d) => {
       if (d.length && d.width) {
-        weight += (d.length * d.width * thickness * density * quantity) / 1000000000;
+        weight +=
+          (d.length * d.width * thickness * density * quantity) / 1000000000;
       }
     });
   }
@@ -154,7 +155,7 @@ const putStocksbyID = async (req, res) => {
       message: "Blog not Found",
     });
   }
-  if ((length && width === "0") || thickness === "0") {
+  if (length <= 100 || width <= 100 || thickness === "0") {
     await Stock.findByIdAndDelete(ID);
     return res.status(200).json({
       success: true,

@@ -82,17 +82,18 @@ function UpdateRemnant() {
     return true;
   };
 
-  // ✅ Go to Canvas page
+  // ✅ Go to Canvas page (save before navigating)
   const handleDrawShape = () => {
     if (!validateForm()) return;
-    localStorage.setItem(
-      "updateRemnantStockForm",
-      JSON.stringify(updateRemnantStock)
-    );
+
+    const updatedData = { ...updateRemnantStock };
+    console.log("Saving to localStorage:", updatedData);
+    localStorage.setItem("updateRemnantStockForm", JSON.stringify(updatedData));
+
     navigate(`/updateremnantcanvas/${id}`);
   };
 
-  // ✅ Fetch remnant data
+  // ✅ Fetch remnant data from API
   const fetchRemnant = async () => {
     try {
       const response = await axios.get(
@@ -110,9 +111,25 @@ function UpdateRemnant() {
     }
   };
 
+  // ✅ Restore data (localStorage → state OR API)
   useEffect(() => {
-    fetchRemnant();
+    setUser(getCurrentuser());
+    const saved = localStorage.getItem("updateRemnantStockForm");
+    if (saved) {
+      console.log("Restoring from localStorage:", JSON.parse(saved));
+      setUpdateRemnantStock(JSON.parse(saved));
+    } else {
+      fetchRemnant();
+    }
   }, [id]);
+
+  // ✅ Auto-sync form to localStorage whenever user edits
+  useEffect(() => {
+    localStorage.setItem(
+      "updateRemnantStockForm",
+      JSON.stringify(updateRemnantStock)
+    );
+  }, [updateRemnantStock]);
 
   // ✅ Update remnant stock
   const updateRemnantStockData = async () => {
@@ -132,7 +149,7 @@ function UpdateRemnant() {
       );
 
       if (response?.data?.success) {
-        toast.success("Remnant Stock Updated Successfully!");
+        toast.success(response.data.message || "Stock Updated Successfully");
         localStorage.removeItem("updateRemnantSheetCanvas");
         localStorage.removeItem("updateRemnantStockForm");
         setTimeout(() => (window.location.href = "/"), 2000);
@@ -144,25 +161,25 @@ function UpdateRemnant() {
 
   const onClose = () => (window.location.href = "/");
 
-  useEffect(() => {
-    setUser(getCurrentuser());
-    const saved = localStorage.getItem("updateRemnantStockForm");
-    if (saved) setUpdateRemnantStock(JSON.parse(saved));
-  }, []);
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm px-4 py-6 overflow-hidden">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden border border-gray-200 animate-fadeIn">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10 px-4 sm:px-8">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden border border-gray-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-t-2xl">
           <h2 className="text-lg font-semibold">Update Remnant Stock</h2>
           <button onClick={onClose} className="hover:text-red-200 transition">
             ✕
           </button>
         </div>
 
-        {/* Form */}
-        <div className="p-5 space-y-3 overflow-y-auto max-h-[65vh]">
+        {/* ✅ Form Section */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            updateRemnantStockData();
+          }}
+          className="p-6 space-y-4 overflow-y-auto max-h-[calc(100vh-200px)]"
+        >
           {/* Thickness */}
           <div className="flex flex-col gap-1">
             <label className="font-medium text-gray-700">Thickness (mm)</label>
@@ -176,6 +193,7 @@ function UpdateRemnant() {
                 })
               }
               className="border border-gray-300 px-3 py-2 rounded-md"
+              required
             />
           </div>
 
@@ -197,6 +215,7 @@ function UpdateRemnant() {
                     handleDimensionChange(index, "length", e.target.value)
                   }
                   className="border border-gray-300 px-2 py-1 rounded-md w-1/2"
+                  required
                 />
                 <input
                   type="number"
@@ -206,9 +225,11 @@ function UpdateRemnant() {
                     handleDimensionChange(index, "width", e.target.value)
                   }
                   className="border border-gray-300 px-2 py-1 rounded-md w-1/2"
+                  required
                 />
                 {index > 0 && (
                   <button
+                    type="button"
                     onClick={() => handleRemoveDimension(index)}
                     className="text-red-500 font-bold hover:text-red-700"
                   >
@@ -218,13 +239,13 @@ function UpdateRemnant() {
               </div>
             ))}
             <button
+              type="button"
               onClick={handleAddDimension}
               className="mt-1 text-sm text-blue-600 hover:underline"
             >
               + Add Dimension
             </button>
 
-            {/* Calculations */}
             <p className="mt-4 text-gray-700">
               <strong>Total Area:</strong> {calculateTotalArea()} mm²
             </p>
@@ -256,6 +277,7 @@ function UpdateRemnant() {
                   })
                 }
                 className="border border-gray-300 px-3 py-2 rounded-md w-full"
+                required={field.key !== "remarks"} // make remarks optional
               />
             </div>
           ))}
@@ -264,6 +286,7 @@ function UpdateRemnant() {
           <label className="text-sm font-semibold mt-2">Draw Shape:</label>
           <div className="p-2">
             <button
+              type="button"
               onClick={handleDrawShape}
               className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
             >
@@ -286,23 +309,24 @@ function UpdateRemnant() {
               </div>
             )}
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-2 px-5 py-3 border-t bg-gray-50">
-          <button
-            onClick={onClose}
-            className="px-4 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-md"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={updateRemnantStockData}
-            className="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-          >
-            Update
-          </button>
-        </div>
+          {/* Footer */}
+          <div className="flex justify-end gap-2 px-5 py-3 border-t bg-gray-50 mt-3 rounded-b-2xl">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            >
+              Update
+            </button>
+          </div>
+        </form>
 
         <Toaster position="top-right" />
       </div>

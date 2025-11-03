@@ -4,7 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
-function AddStockModal({ onClose }) {
+function AddStockModal() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,179 +119,211 @@ function AddStockModal({ onClose }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 w-[95%] sm:w-[450px] max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+    <div className="min-h-screen bg-gray-50 text-gray-800 p-10">
+      <div className="max-w-5xl mx-auto space-y-10">
+        <h1 className="text-4xl font-bold text-center text-blue-700 mb-8">
           Add New Stock
-        </h2>
+        </h1>
 
-        {/* Sheet Type Selector */}
-        <label htmlFor="sheetType" className="font-semibold">
-          Sheet Type:
-        </label>
-        <select
-          id="sheetType"
-          value={newStock.sheetType}
-          onChange={(e) =>
-            setNewStock({ ...newStock, sheetType: e.target.value })
-          }
-          className="border border-gray-300 w-full px-3 py-2 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <option value="regular">Regular</option>
-          <option value="remnant">Remnant</option>
-        </select>
-
-        {/* Common Inputs */}
-        <div className="flex flex-col gap-3">
-          <input
-            type="number"
-            placeholder="Thickness (mm)"
-            className="border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
-            value={newStock.thickness}
+        {/* --- Sheet Type Section --- */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Sheet Type
+          </h2>
+          <select
+            value={newStock.sheetType}
             onChange={(e) =>
-              setNewStock({ ...newStock, thickness: e.target.value })
+              setNewStock({ ...newStock, sheetType: e.target.value })
             }
-            required
-          />
-          <input
-            type="number"
-            placeholder="Quantity"
-            className="border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
-            value={newStock.quantity}
-            onChange={(e) =>
-              setNewStock({ ...newStock, quantity: e.target.value })
-            }
-            required
-          />
-          <input
-            type="text"
-            placeholder="Company Name"
-            className="border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
-            value={newStock.companyname}
-            onChange={(e) =>
-              setNewStock({ ...newStock, companyname: e.target.value })
-            }
-            required
-          />
-          <input
-            type="text"
-            placeholder="Remarks"
-            className="border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
-            value={newStock.remarks}
-            onChange={(e) =>
-              setNewStock({ ...newStock, remarks: e.target.value })
-            }
-          />
-        </div>
+            className="px-4 py-2 rounded-md border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="regular">Regular</option>
+            <option value="remnant">Remnant</option>
+          </select>
+        </section>
 
-        {/* Regular Sheet Inputs */}
-        {newStock.sheetType === "regular" && (
-          <div className="flex flex-col gap-3 mt-3">
-            <input
-              type="number"
-              placeholder="Length (mm)"
-              className="border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
-              value={newStock.length}
-              onChange={(e) =>
-                setNewStock({ ...newStock, length: e.target.value })
-              }
-              required
-            />
-            <input
-              type="number"
-              placeholder="Width (mm)"
-              className="border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
-              value={newStock.width}
-              onChange={(e) =>
-                setNewStock({ ...newStock, width: e.target.value })
-              }
-              required
-            />
-          </div>
-        )}
-
-        {/* Remnant Sheet Inputs */}
-        {newStock.sheetType === "remnant" && (
-          <div className="mt-4">
-            <h3 className="font-semibold mb-2">Remnant Dimensions:</h3>
-            {dimensions.map((dim, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <input
-                  type="number"
-                  placeholder={`L${index + 1} (mm)`}
-                  value={dim.length}
-                  onChange={(e) =>
-                    handleDimensionChange(index, "length", e.target.value)
-                  }
-                  className="border px-3 py-2 rounded-md w-1/2"
-                />
-                <input
-                  type="number"
-                  placeholder={`W${index + 1} (mm)`}
-                  value={dim.width}
-                  onChange={(e) =>
-                    handleDimensionChange(index, "width", e.target.value)
-                  }
-                  className="border px-3 py-2 rounded-md w-1/2"
-                />
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={handleAddDimension}
-              className="text-blue-600 text-sm font-semibold hover:underline mb-2"
-            >
-              + Add More Dimensions
-            </button>
-
-            <input
-              type="text"
-              placeholder="Shape Description"
-              className="border px-3 py-2 rounded-md w-full mb-2"
-              value={newStock.shapeDescription}
-              onChange={(e) =>
-                setNewStock({ ...newStock, shapeDescription: e.target.value })
-              }
-            />
-
-            <button
-              onClick={handleDrawShape}
-              className="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-            >
-              Draw Shape
-            </button>
-
-            <div className="mt-3">
-              <h4 className="font-semibold">Preview:</h4>
-              {canvaData ? (
-                <img
-                  src={canvaData}
-                  alt="Sheet Canvas"
-                  className="w-64 h-48 border rounded-lg shadow-sm"
-                />
-              ) : (
-                <div className="w-64 h-48 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
-                  No Preview
-                </div>
-              )}
+        {/* --- Common Info Section --- */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Common Details
+          </h2>
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div>
+              <p className="font-medium">Thickness (mm)</p>
+              <input
+                type="number"
+                value={newStock.thickness}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, thickness: e.target.value })
+                }
+                className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <p className="font-medium">Quantity</p>
+              <input
+                type="number"
+                value={newStock.quantity}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, quantity: e.target.value })
+                }
+                className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <p className="font-medium">Company Name</p>
+              <input
+                type="text"
+                value={newStock.companyname}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, companyname: e.target.value })
+                }
+                className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <p className="font-medium">Remarks</p>
+              <input
+                type="text"
+                value={newStock.remarks}
+                onChange={(e) =>
+                  setNewStock({ ...newStock, remarks: e.target.value })
+                }
+                className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+              />
             </div>
           </div>
+        </section>
+
+        {/* --- Regular Sheet Section --- */}
+        {newStock.sheetType === "regular" && (
+          <section>
+            <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+              Regular Sheet Dimensions
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div>
+                <p className="font-medium">Length (mm)</p>
+                <input
+                  type="number"
+                  value={newStock.length}
+                  onChange={(e) =>
+                    setNewStock({ ...newStock, length: e.target.value })
+                  }
+                  className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+                />
+              </div>
+              <div>
+                <p className="font-medium">Width (mm)</p>
+                <input
+                  type="number"
+                  value={newStock.width}
+                  onChange={(e) =>
+                    setNewStock({ ...newStock, width: e.target.value })
+                  }
+                  className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+                />
+              </div>
+            </div>
+          </section>
         )}
 
-        {/* Buttons */}
-        <div className="flex justify-between mt-6">
+        {/* --- Remnant Sheet Section --- */}
+        {newStock.sheetType === "remnant" && (
+          <section>
+            <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+              Remnant Sheet Details
+            </h2>
+
+            <div className="space-y-3">
+              <h3 className="font-semibold">Remnant Dimensions</h3>
+              {dimensions.map((dim, index) => (
+                <div key={index} className="flex gap-3">
+                  <input
+                    type="number"
+                    placeholder={`L${index + 1} (mm)`}
+                    value={dim.length}
+                    onChange={(e) =>
+                      handleDimensionChange(index, "length", e.target.value)
+                    }
+                    className="border-b border-gray-400 bg-transparent px-2 py-1 focus:border-blue-500 outline-none w-1/2"
+                  />
+                  <input
+                    type="number"
+                    placeholder={`W${index + 1} (mm)`}
+                    value={dim.width}
+                    onChange={(e) =>
+                      handleDimensionChange(index, "width", e.target.value)
+                    }
+                    className="border-b border-gray-400 bg-transparent px-2 py-1 focus:border-blue-500 outline-none w-1/2"
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddDimension}
+                className="text-blue-600 hover:text-blue-800 text-sm font-semibold"
+              >
+                + Add More Dimensions
+              </button>
+
+              <div className="mt-4">
+                <p className="font-medium">Shape Description</p>
+                <input
+                  type="text"
+                  placeholder="Describe the shape..."
+                  className="mt-1 w-full border-b border-gray-400 bg-transparent focus:border-blue-500 outline-none"
+                  value={newStock.shapeDescription}
+                  onChange={(e) =>
+                    setNewStock({
+                      ...newStock,
+                      shapeDescription: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="mt-4">
+                <button
+                  onClick={handleDrawShape}
+                  className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                  Draw Shape
+                </button>
+
+                <div className="mt-4">
+                  <h4 className="font-semibold mb-2">Preview:</h4>
+                  {canvaData ? (
+                    <img
+                      src={canvaData}
+                      alt="Sheet Canvas"
+                      className="w-80 h-auto border border-gray-300 rounded-lg shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-80 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                      No Preview
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* --- Buttons --- */}
+        <section className="flex justify-center gap-6 pt-8 border-t">
           <button
             type="button"
-            className="w-1/2 mr-2 px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
-            onClick={onClose}
+            className="px-6 py-2 rounded-lg border border-gray-400 hover:bg-gray-100 transition"
             disabled={isSubmitting}
+            onClick={() => navigate("/")}
           >
             Cancel
           </button>
           <button
             onClick={addStock}
             disabled={isSubmitting}
-            className={`w-1/2 ml-2 px-4 py-2 rounded-lg font-semibold text-white transition ${
+            className={`px-6 py-2 rounded-lg font-semibold text-white transition ${
               isSubmitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -299,8 +331,9 @@ function AddStockModal({ onClose }) {
           >
             {isSubmitting ? "Saving..." : "Save"}
           </button>
-        </div>
+        </section>
       </div>
+
       <Toaster position="top-right" />
     </div>
   );

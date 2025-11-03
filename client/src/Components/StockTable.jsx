@@ -7,9 +7,11 @@ import { autoTable } from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 function StockTable() {
+  const navigate = useNavigate();
   const [logginUser, setLogginUser] = useState(null);
   const [stocks, setStocks] = useState([]);
   const [remnantstocks, setRemnantStocks] = useState([]);
@@ -212,6 +214,12 @@ function StockTable() {
             </>
           ) : (
             <>
+              <button
+                onClick={() => navigate("/")}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-green-700 transition"
+              >
+                Home
+              </button>
               <button
                 onClick={exportToPDF}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-green-700 transition"
