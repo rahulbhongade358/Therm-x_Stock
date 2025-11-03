@@ -21,11 +21,11 @@ const postStocks = async (req, res) => {
   let weight = 0;
 
   if (sheetType === "regular") {
-    weight = (length * width * thickness * density) / 1000000000;
+    weight = (length * width * thickness * density * quantity) / 1000000000;
   } else if (sheetType === "remnant" && dimensions.length > 0) {
     dimensions.forEach((d) => {
       if (d.length && d.width) {
-        weight += (d.length * d.width * thickness * density) / 1000000000;
+        weight += (d.length * d.width * thickness * density * quantity) / 1000000000;
       }
     });
   }
@@ -146,7 +146,7 @@ const putStocksbyID = async (req, res) => {
     sheetCanvas,
   } = req.body;
   const density = 7850; // kg/m³ for steel
-  const weight = (length * width * thickness * density) / 1000000000;
+  const weight = (length * width * thickness * density * quantity) / 1000000000;
   const existingStock = await Stock.findOne({ _id: ID });
   if (!existingStock) {
     return res.status(404).json({
