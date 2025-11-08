@@ -11,10 +11,11 @@ function AddRemnantStockModal({ onClose }) {
   const [user, setUser] = useState(null);
   const [sheetOptions, setSheetOptions] = useState([]);
 
-  // ✅ Multiple dimensions (length-width pairs)
+  // ✅ Multiple dimensions
   const [dimensions, setDimensions] = useState([{ length: "", width: "" }]);
   const [calculatedWeight, setCalculatedWeight] = useState(0);
 
+  // ✅ Base form data
   const [remnantStock, setRemnantStock] = useState({
     sheetType: "remnant",
     thickness: "",
@@ -26,41 +27,53 @@ function AddRemnantStockModal({ onClose }) {
     sheetCanvas: "",
   });
 
+  // ✅ PDF File State
+  const [pdfFile, setPdfFile] = useState(null);
+
   let remnantCanvasData = localStorage.getItem("remnantSheetCanvas");
 
-  // ✅ Add new dimension input box
+  // ✅ Convert PDF → Base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  // ✅ Add dimension input
   const addNewDimension = () => {
     setDimensions([...dimensions, { length: "", width: "" }]);
   };
 
-  // ✅ Update specific length/width
+  // ✅ Update dim values
   const handleDimensionChange = (index, field, value) => {
     const updated = [...dimensions];
     updated[index][field] = value;
     setDimensions(updated);
   };
 
-  // ✅ Calculate total area
+  // ✅ Calculate total area mm²
   const calculateTotalArea = () => {
-    const total = dimensions.reduce(
+    return dimensions.reduce(
       (sum, dim) => sum + (Number(dim.length) || 0) * (Number(dim.width) || 0),
       0
     );
-    return total;
   };
 
-  // ✅ Calculate weight (steel = 7850 kg/m³)
+  // ✅ Weight calculation
   useEffect(() => {
     if (remnantStock.thickness) {
       const density = 7850;
-      const totalArea = calculateTotalArea(); // mm²
-      const volume = totalArea * Number(remnantStock.thickness); // mm³
-      const weight = (volume * density) / 1_000_000_000; // convert mm³ → m³
+      const totalArea = calculateTotalArea();
+      const volume = totalArea * Number(remnantStock.thickness);
+      const weight = (volume * density) / 1_000_000_000;
       setCalculatedWeight(weight.toFixed(2));
     }
   }, [dimensions, remnantStock.thickness]);
 
-  // ✅ Form validation
+  // ✅ Validate form
   const validateForm = () => {
     if (
       !remnantStock.thickness ||
@@ -69,12 +82,13 @@ function AddRemnantStockModal({ onClose }) {
       !remnantStock.shapeDescription ||
       !dimensions.some((d) => d.length && d.width)
     ) {
-      toast.error("Please fill in all required fields before proceeding!");
+      toast.error("Please fill all required fields!");
       return false;
     }
     return true;
   };
 
+  // ✅ Navigate to canvas draw page
   const handleRemnantDrawShape = () => {
     if (!validateForm()) return;
     localStorage.setItem("RemnantStockForm", JSON.stringify(remnantStock));
@@ -82,34 +96,53 @@ function AddRemnantStockModal({ onClose }) {
     navigate("/remnantcanvas");
   };
 
-  // ✅ Save stock
+  // ✅ Save stock (FINAL)
   const addstock = async () => {
     try {
       setIsSubmitting(true);
-      const sheetData = localStorage.getItem("RemnantStockForm");
-      const restoredStock = sheetData ? JSON.parse(sheetData) : remnantStock;
-      const dimensionsData = localStorage.getItem("RemnantStockDimensions");
-      const restoredDimensions = dimensionsData
-        ? JSON.parse(dimensionsData)
+
+      const storedForm = localStorage.getItem("RemnantStockForm");
+      const restoredStock = storedForm ? JSON.parse(storedForm) : remnantStock;
+
+      const storedDimensions = localStorage.getItem("RemnantStockDimensions");
+      const restoredDimensions = storedDimensions
+        ? JSON.parse(storedDimensions)
         : dimensions;
 
+      // ✅ PDF convert
+      let base64Pdf = null;
+      let pdfName = null;
+
+      if (pdfFile) {
+        base64Pdf = await convertToBase64(pdfFile);
+        pdfName = pdfFile.name;
+      }
+
+      // ✅ Payload for backend
       const payload = {
         ...restoredStock,
         dimensions: restoredDimensions,
         weight: calculatedWeight,
         sheetCanvas: remnantCanvasData,
         addedBy: user?._id,
+
+        // ✅ Add PDF
+        pdfBase64: base64Pdf,
+        pdfName: pdfName,
       };
 
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/remnantstocks`,
         payload
       );
+
       if (response?.data?.success) {
         toast.success(response.data.message);
+
         localStorage.removeItem("remnantSheetCanvas");
         localStorage.removeItem("RemnantStockForm");
         localStorage.removeItem("RemnantStockDimensions");
+
         setTimeout(() => {
           window.location.href = "/";
         }, 1000);
@@ -123,7 +156,7 @@ function AddRemnantStockModal({ onClose }) {
     }
   };
 
-  // ✅ Fetch all regular sheets
+  // ✅ Fetch regular sheets
   const fetchSheets = async () => {
     try {
       const response = await axios.get(
@@ -131,23 +164,15 @@ function AddRemnantStockModal({ onClose }) {
       );
 
       const allSheets = response.data.data;
-
-      // ✅ Filter only regular sheets
       const regularSheets = allSheets.filter(
         (sheet) => sheet.sheetType === "regular"
       );
 
-      // ✅ Format dropdown data
       const formatted = regularSheets.map((sheet) => ({
         value: sheet._id,
-        label: `Thk: ${sheet.thickness}mm | ${sheet.length}×${sheet.width}mm | Qty: ${sheet.quantity} | ${sheet.companyname}`,
-        thickness: sheet.thickness,
-        length: sheet.length,
-        width: sheet.width,
-        quantity: sheet.quantity,
+        label: `Thk: ${sheet.thickness}mm | ${sheet.length}×${sheet.width} | Qty: ${sheet.quantity} | ${sheet.companyname}`,
       }));
 
-      // ✅ Update dropdown options
       setSheetOptions(formatted);
     } catch (error) {
       console.error("Error fetching sheets:", error);
@@ -157,14 +182,12 @@ function AddRemnantStockModal({ onClose }) {
   useEffect(() => {
     setUser(getCurrentuser());
     fetchSheets();
-    const remnantForm = localStorage.getItem("RemnantStockForm");
-    if (remnantForm) {
-      setRemnantStock(JSON.parse(remnantForm));
-    }
-    const remnantDimensions = localStorage.getItem("RemnantStockDimensions");
-    if (remnantDimensions) {
-      setDimensions(JSON.parse(remnantDimensions));
-    }
+
+    const savedForm = localStorage.getItem("RemnantStockForm");
+    if (savedForm) setRemnantStock(JSON.parse(savedForm));
+
+    const savedDim = localStorage.getItem("RemnantStockDimensions");
+    if (savedDim) setDimensions(JSON.parse(savedDim));
   }, []);
 
   return (
@@ -174,7 +197,7 @@ function AddRemnantStockModal({ onClose }) {
           Add Remnant Stock
         </h1>
 
-        {/* --- Sheet Selection Section --- */}
+        {/* ✅ Select Original Sheet */}
         <section>
           <h2 className="text-xl font-semibold mb-3 border-b pb-2">
             Select Original Sheet
@@ -192,71 +215,65 @@ function AddRemnantStockModal({ onClose }) {
                 orignalsheetid: selected.value,
               })
             }
-            placeholder="Search or select original sheet..."
-            isSearchable
+            placeholder="Select a sheet..."
           />
         </section>
 
-        {/* --- Thickness + Dimensions --- */}
+        {/* ✅ Thickness + Dimensions */}
         <section>
           <h2 className="text-xl font-semibold mb-3 border-b pb-2">
             Sheet Details
           </h2>
 
-          <div className="text-lg">
-            <p className="mb-3">
-              Thickness:{" "}
-              <input
-                type="number"
-                placeholder="mm"
-                className="ml-2 px-3 py-1 rounded-md border border-gray-300 w-24 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={remnantStock.thickness}
-                onChange={(e) =>
-                  setRemnantStock({
-                    ...remnantStock,
-                    thickness: e.target.value,
-                  })
-                }
-              />
-            </p>
+          <p className="mb-3">
+            Thickness:
+            <input
+              type="number"
+              placeholder="mm"
+              className="ml-2 px-3 py-1 border rounded-md w-24"
+              value={remnantStock.thickness}
+              onChange={(e) =>
+                setRemnantStock({ ...remnantStock, thickness: e.target.value })
+              }
+            />
+          </p>
 
-            <p className="font-medium">Dimensions (mm):</p>
-            <div className="space-y-2 mt-2">
-              {dimensions.map((dim, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <span className="text-gray-600">Set {index + 1}:</span>
-                  <input
-                    type="number"
-                    placeholder="Length"
-                    className="border border-gray-300 rounded-md px-3 py-1 w-28 focus:ring-2 focus:ring-blue-400"
-                    value={dim.length}
-                    onChange={(e) =>
-                      handleDimensionChange(index, "length", e.target.value)
-                    }
-                  />
-                  <input
-                    type="number"
-                    placeholder="Width"
-                    className="border border-gray-300 rounded-md px-3 py-1 w-28 focus:ring-2 focus:ring-blue-400"
-                    value={dim.width}
-                    onChange={(e) =>
-                      handleDimensionChange(index, "width", e.target.value)
-                    }
-                  />
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={addNewDimension}
-              className="mt-3 text-blue-600 hover:text-blue-800 text-sm"
-            >
-              + Add More Dimensions
-            </button>
+          <p className="font-medium">Dimensions (mm):</p>
+          <div className="space-y-2 mt-2">
+            {dimensions.map((dim, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span>Set {index + 1}:</span>
+                <input
+                  type="number"
+                  placeholder="Length"
+                  className="border rounded-md px-3 py-1 w-28"
+                  value={dim.length}
+                  onChange={(e) =>
+                    handleDimensionChange(index, "length", e.target.value)
+                  }
+                />
+                <input
+                  type="number"
+                  placeholder="Width"
+                  className="border rounded-md px-3 py-1 w-28"
+                  value={dim.width}
+                  onChange={(e) =>
+                    handleDimensionChange(index, "width", e.target.value)
+                  }
+                />
+              </div>
+            ))}
           </div>
+
+          <button
+            onClick={addNewDimension}
+            className="mt-3 text-blue-600 hover:text-blue-800 text-sm"
+          >
+            + Add More Dimensions
+          </button>
         </section>
 
-        {/* --- Area and Weight --- */}
+        {/* ✅ Preview Area */}
         <section className="bg-white p-5 rounded-xl shadow-sm">
           <h2 className="text-xl font-semibold mb-2">Preview Calculations</h2>
           <p>
@@ -267,18 +284,19 @@ function AddRemnantStockModal({ onClose }) {
           </p>
         </section>
 
-        {/* --- Additional Info --- */}
+        {/* ✅ Additional Info */}
         <section>
           <h2 className="text-xl font-semibold mb-3 border-b pb-2">
             Additional Information
           </h2>
+
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <span className="font-medium">Company:</span>
               <input
                 type="text"
-                placeholder="Company Name"
-                className="ml-2 border-b border-gray-400 focus:border-blue-500 bg-transparent outline-none w-full"
+                placeholder="Company name"
+                className="ml-2 border-b border-gray-400 w-full"
                 value={remnantStock.companyname}
                 onChange={(e) =>
                   setRemnantStock({
@@ -293,10 +311,13 @@ function AddRemnantStockModal({ onClose }) {
               <input
                 type="text"
                 placeholder="Remarks"
-                className="ml-2 border-b border-gray-400 focus:border-blue-500 bg-transparent outline-none w-full"
+                className="ml-2 border-b border-gray-400 w-full"
                 value={remnantStock.remarks}
                 onChange={(e) =>
-                  setRemnantStock({ ...remnantStock, remarks: e.target.value })
+                  setRemnantStock({
+                    ...remnantStock,
+                    remarks: e.target.value,
+                  })
                 }
               />
             </div>
@@ -306,8 +327,8 @@ function AddRemnantStockModal({ onClose }) {
             <span className="font-medium">Shape Description:</span>
             <input
               type="text"
-              placeholder="Describe the shape..."
-              className="ml-2 border-b border-gray-400 focus:border-blue-500 bg-transparent outline-none w-full"
+              placeholder="Describe shape..."
+              className="ml-2 border-b border-gray-400 w-full"
               value={remnantStock.shapeDescription}
               onChange={(e) =>
                 setRemnantStock({
@@ -319,15 +340,36 @@ function AddRemnantStockModal({ onClose }) {
           </div>
         </section>
 
-        {/* --- Canvas Section --- */}
+        {/* ✅ PDF Upload Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+            Attach PDF
+          </h2>
+
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setPdfFile(e.target.files[0])}
+            className="block mt-2"
+          />
+
+          {pdfFile && (
+            <p className="text-sm text-gray-600 mt-2">
+              Selected: <strong>{pdfFile.name}</strong>
+            </p>
+          )}
+        </section>
+
+        {/* ✅ Canvas Preview */}
         <section>
           <h2 className="text-xl font-semibold mb-3 border-b pb-2">
             Shape Drawing
           </h2>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+
+          <div className="flex flex-col sm:flex-row gap-6">
             <button
               onClick={handleRemnantDrawShape}
-              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
               Draw Shape
             </button>
@@ -338,10 +380,10 @@ function AddRemnantStockModal({ onClose }) {
                 <img
                   src={remnantCanvasData}
                   alt="Sheet Canvas"
-                  className="w-80 h-auto border border-gray-300 rounded-lg shadow-sm"
+                  className="w-80 border rounded-lg shadow-sm"
                 />
               ) : (
-                <div className="w-80 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
+                <div className="w-80 h-40 border border-dashed rounded-lg flex justify-center items-center text-gray-400">
                   No Preview
                 </div>
               )}
@@ -349,20 +391,21 @@ function AddRemnantStockModal({ onClose }) {
           </div>
         </section>
 
-        {/* --- Action Buttons --- */}
+        {/* ✅ Action Buttons */}
         <section className="flex justify-center gap-6 pt-6 border-t">
           <button
             type="button"
-            className="px-6 py-2 rounded-lg border border-gray-400 hover:bg-gray-100 transition"
+            className="px-6 py-2 rounded-lg border hover:bg-gray-100"
             onClick={() => navigate("/")}
             disabled={isSubmitting}
           >
             Cancel
           </button>
+
           <button
             onClick={addstock}
             disabled={isSubmitting}
-            className={`px-6 py-2 rounded-lg font-semibold text-white transition ${
+            className={`px-6 py-2 rounded-lg text-white font-semibold ${
               isSubmitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"

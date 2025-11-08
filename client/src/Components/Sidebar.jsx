@@ -25,12 +25,6 @@ function Sidebar() {
               </button>
             </Link>
 
-            <Link to="/reports">
-              <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200">
-                📊 <span>Reports</span>
-              </button>
-            </Link>
-
             {user ? (
               <button
                 onClick={() => {
@@ -61,12 +55,6 @@ function Sidebar() {
             <Link onClick={() => setIsOpen(false)} to="/allstocks">
               <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200 font-medium">
                 📦 <span>Stocks</span>
-              </button>
-            </Link>
-
-            <Link onClick={() => setIsOpen(false)} to="/reports">
-              <button className="flex items-center gap-2 hover:text-blue-300 transition-all duration-200 font-medium">
-                📊 <span>Reports</span>
               </button>
             </Link>
 

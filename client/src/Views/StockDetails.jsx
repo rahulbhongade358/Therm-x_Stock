@@ -15,8 +15,6 @@ const StockDetails = () => {
   const [remnantData, setRemnantData] = useState(null);
   const [loadingStock, setLoadingStock] = useState(true);
   const [loadingRemnant, setLoadingRemnant] = useState(true);
-  console.log("Stock Data:", stockData);
-  console.log("Remnant Data:", remnantData);
   // ✅ Fetch both Stock and Remnant Data
   const fetchData = async () => {
     try {
@@ -217,6 +215,7 @@ const StockDetails = () => {
               <p>
                 <strong>Company:</strong> {remnantData.companyname}
               </p>
+
               <p>
                 <strong>Shape Description:</strong>{" "}
                 {remnantData.shapeDescription || "—"}
@@ -250,6 +249,9 @@ const StockDetails = () => {
                 <strong>Last Updated:</strong>{" "}
                 {new Date(remnantData.updatedAt).toLocaleString()}
               </p>
+              <p className="text-sm text-gray-500 col-span-2">
+                <strong>Pdf Name:</strong> {remnantData.pdfName}
+              </p>
             </div>
           </div>
         ) : null}
@@ -272,6 +274,16 @@ const StockDetails = () => {
             </div>
           </div>
         )}
+        {
+          <a
+            href={`${import.meta.env.VITE_API_URL}/remnantstocks/viewpdf/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            View PDF
+          </a>
+        }
 
         <div className="mt-10 text-center">
           <button

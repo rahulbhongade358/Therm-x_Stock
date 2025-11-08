@@ -9,7 +9,7 @@ function UpdateRemnant() {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [calculatedWeight, setCalculatedWeight] = useState(0);
-
+  const [pdfFile, setPdfFile] = useState(null);
   const [updateRemnantStock, setUpdateRemnantStock] = useState({
     thickness: "",
     dimensions: [{ length: "", width: "" }],
@@ -20,6 +20,15 @@ function UpdateRemnant() {
     shapeDescription: "",
     sheetCanvas: "",
   });
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
   const updateRemnantCanvaData = localStorage.getItem(
     "updateRemnantSheetCanvas"
@@ -136,11 +145,19 @@ function UpdateRemnant() {
     try {
       const stored = localStorage.getItem("updateRemnantStockForm");
       const restoredStock = stored ? JSON.parse(stored) : updateRemnantStock;
+      let base64Pdf = null;
+      let pdfName = null;
 
+      if (pdfFile) {
+        base64Pdf = await convertToBase64(pdfFile);
+        pdfName = pdfFile.name;
+      }
       const payload = {
         ...restoredStock,
         sheetCanvas: updateRemnantCanvaData,
         addedBy: user?._id,
+        pdfBase64: base64Pdf,
+        pdfName: pdfName,
       };
 
       const response = await axios.put(
@@ -281,7 +298,24 @@ function UpdateRemnant() {
               />
             </div>
           ))}
+          <section>
+            <h2 className="text-xl font-semibold mb-3 border-b pb-2">
+              Attach PDF
+            </h2>
 
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setPdfFile(e.target.files[0])}
+              className="block mt-2"
+            />
+
+            {pdfFile && (
+              <p className="text-sm text-gray-600 mt-2">
+                Selected: <strong>{pdfFile.name}</strong>
+              </p>
+            )}
+          </section>
           {/* Canvas */}
           <label className="text-sm font-semibold mt-2">Draw Shape:</label>
           <div className="p-2">

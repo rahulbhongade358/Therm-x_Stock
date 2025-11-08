@@ -12,18 +12,20 @@ const postRemnantStocks = async (req, res) => {
       orignalsheetid,
       remarks,
       sheetCanvas,
+      pdfBase64,
+      pdfName,
     } = req.body;
 
-    // ✅ Calculate total area and weight (for steel)
-    const density = 7850; // kg/m³ for steel
+    // ✅ Calculate total area and weight (steel density)
+    const density = 7850;
     const totalArea = dimensions.reduce(
       (sum, dim) => sum + Number(dim.length || 0) * Number(dim.width || 0),
       0
     );
 
-    const weight = (totalArea * Number(thickness) * density) / 1_000_000_000; // mm³ → m³
+    const weight = (totalArea * Number(thickness) * density) / 1_000_000_000;
 
-    // ✅ Create new remnant record
+    // ✅ Create new remnant with PDF included
     const newRemnantStock = new RemnantStock({
       thickness,
       dimensions,
@@ -36,11 +38,13 @@ const postRemnantStocks = async (req, res) => {
       sheetType: "remnant",
       quantity: 1,
       sheetCanvas,
+      pdfData: pdfBase64 || null,
+      pdfName: pdfName || null,
     });
 
     const savedRemnant = await newRemnantStock.save();
 
-    // ✅ Update original sheet: decrease quantity and adjust weight
+    // ✅ Update original sheet
     if (orignalsheetid) {
       const originalSheet = await Stock.findById(orignalsheetid);
 
@@ -53,6 +57,7 @@ const postRemnantStocks = async (req, res) => {
             density *
             updatedQuantity) /
           1000000000;
+
         await Stock.findByIdAndUpdate(
           orignalsheetid,
           {
@@ -61,14 +66,14 @@ const postRemnantStocks = async (req, res) => {
           { new: true }
         );
 
-        // ✅ If quantity becomes 0 → delete the original stock
+        // ✅ Delete if quantity becomes zero
         if (updatedQuantity <= 0) {
           await Stock.findByIdAndDelete(orignalsheetid);
         }
       }
     }
 
-    // ✅ Send response
+    // ✅ Final response
     res.status(201).json({
       success: true,
       data: savedRemnant,
@@ -94,6 +99,8 @@ const putRemnantStocksbyID = async (req, res) => {
     companyname,
     shapeDescription,
     sheetCanvas,
+    pdfBase64,
+    pdfName,
   } = req.body;
 
   const density = 7850; // kg/m³ for steel
@@ -114,6 +121,11 @@ const putRemnantStocksbyID = async (req, res) => {
       success: false,
       message: "Remnant not found",
     });
+  }
+
+  if (existingStock.pdfData && pdfName && pdfBase64) {
+    existingStock.pdfData = pdfBase64;
+    existingStock.pdfName = pdfName;
   }
 
   // ✅ Check if remnant is fully used
@@ -143,6 +155,8 @@ const putRemnantStocksbyID = async (req, res) => {
       shapeDescription,
       sheetType: "remnant",
       sheetCanvas,
+      pdfData: pdfBase64 || null,
+      pdfName: pdfName || null,
     },
     { new: true }
   );
@@ -202,10 +216,29 @@ const deleteremnantStockbyID = async (req, res) => {
     message: `Sheet Deleted Successfully`,
   });
 };
+const getremnantpdfbyID = async (req, res) => {
+  try {
+    const remnant = await RemnantStock.findById(req.params.ID);
+
+    if (!remnant || !remnant.pdfData) {
+      return res.status(404).send("PDF not found");
+    }
+
+    const pdfBuffer = Buffer.from(remnant.pdfData, "base64");
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error("PDF View Error:", error);
+    res.status(500).send("Error retrieving PDF");
+  }
+};
+
 export {
   deleteremnantStockbyID,
   postRemnantStocks,
   putRemnantStocksbyID,
   getRemnantStocksbyID,
+  getremnantpdfbyID,
   getRemnantStock,
 };

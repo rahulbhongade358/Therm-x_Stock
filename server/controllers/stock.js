@@ -155,7 +155,7 @@ const putStocksbyID = async (req, res) => {
       message: "Blog not Found",
     });
   }
-  if (length <= 100 || width <= 100 || thickness === "0") {
+  if (length <= 100 || width <= 100 || thickness === "0" || quantity === 0) {
     await Stock.findByIdAndDelete(ID);
     return res.status(200).json({
       success: true,
