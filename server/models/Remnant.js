@@ -25,7 +25,6 @@ const newRemnant = new Schema(
       required: true,
     },
     shapeDescription: { type: String },
-    sheetCanvas: { type: String },
     pdfData: {
       type: String,
     },

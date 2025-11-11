@@ -5,8 +5,8 @@ import { useNavigate, useParams } from "react-router";
 import { getCurrentuser } from "../utils/utils";
 
 function UpdateRemnant() {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState(null);
   const [calculatedWeight, setCalculatedWeight] = useState(0);
   const [pdfFile, setPdfFile] = useState(null);
@@ -18,7 +18,6 @@ function UpdateRemnant() {
     addedBy: "",
     companyname: "",
     shapeDescription: "",
-    sheetCanvas: "",
   });
 
   const convertToBase64 = (file) => {
@@ -29,10 +28,6 @@ function UpdateRemnant() {
       reader.onerror = (error) => reject(error);
     });
   };
-
-  const updateRemnantCanvaData = localStorage.getItem(
-    "updateRemnantSheetCanvas"
-  );
 
   // ✅ Add new L×W row
   const handleAddDimension = () => {
@@ -90,18 +85,6 @@ function UpdateRemnant() {
     }
     return true;
   };
-
-  // ✅ Go to Canvas page (save before navigating)
-  const handleDrawShape = () => {
-    if (!validateForm()) return;
-
-    const updatedData = { ...updateRemnantStock };
-    console.log("Saving to localStorage:", updatedData);
-    localStorage.setItem("updateRemnantStockForm", JSON.stringify(updatedData));
-
-    navigate(`/updateremnantcanvas/${id}`);
-  };
-
   // ✅ Fetch remnant data from API
   const fetchRemnant = async () => {
     try {
@@ -143,6 +126,11 @@ function UpdateRemnant() {
   // ✅ Update remnant stock
   const updateRemnantStockData = async () => {
     try {
+      setIsSubmitting(true);
+      if (!validateForm()) {
+        setIsSubmitting(false);
+        return;
+      }
       const stored = localStorage.getItem("updateRemnantStockForm");
       const restoredStock = stored ? JSON.parse(stored) : updateRemnantStock;
       let base64Pdf = null;
@@ -154,12 +142,10 @@ function UpdateRemnant() {
       }
       const payload = {
         ...restoredStock,
-        sheetCanvas: updateRemnantCanvaData,
         addedBy: user?._id,
         pdfBase64: base64Pdf,
         pdfName: pdfName,
       };
-
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}/remnantstocks/${id}`,
         payload
@@ -167,12 +153,15 @@ function UpdateRemnant() {
 
       if (response?.data?.success) {
         toast.success(response.data.message || "Stock Updated Successfully");
-        localStorage.removeItem("updateRemnantSheetCanvas");
         localStorage.removeItem("updateRemnantStockForm");
-        setTimeout(() => (window.location.href = "/"), 2000);
+        setTimeout(() => (window.location.href = "/"), 1000);
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error Updating Stock");
+    } finally {
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 2000);
     }
   };
 
@@ -300,7 +289,11 @@ function UpdateRemnant() {
           ))}
           <section>
             <h2 className="text-xl font-semibold mb-3 border-b pb-2">
-              Attach PDF
+              Attach PDF{" "}
+              <span className="text-[12px] text-gray-400 ">
+                Please upload a PDF file by clicking below 👇 size should be
+                15kb
+              </span>
             </h2>
 
             <input
@@ -316,33 +309,6 @@ function UpdateRemnant() {
               </p>
             )}
           </section>
-          {/* Canvas */}
-          <label className="text-sm font-semibold mt-2">Draw Shape:</label>
-          <div className="p-2">
-            <button
-              type="button"
-              onClick={handleDrawShape}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-            >
-              Draw Shape
-            </button>
-          </div>
-
-          {/* Preview */}
-          <div>
-            <h2>Preview:</h2>
-            {updateRemnantCanvaData ? (
-              <img
-                src={updateRemnantCanvaData}
-                alt="Sheet Canvas"
-                className="w-70 h-50 border border-gray-300 rounded-lg shadow-sm"
-              />
-            ) : (
-              <div className="w-56 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
-                No Preview
-              </div>
-            )}
-          </div>
 
           {/* Footer */}
           <div className="flex justify-end gap-2 px-5 py-3 border-t bg-gray-50 mt-3 rounded-b-2xl">
@@ -355,9 +321,14 @@ function UpdateRemnant() {
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+              disabled={isSubmitting}
+              className={`px-6 py-2 rounded-lg text-white font-semibold ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Update
+              {isSubmitting ? "Updating..." : "Update Stock"}
             </button>
           </div>
         </form>

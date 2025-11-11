@@ -11,7 +11,6 @@ const postRemnantStocks = async (req, res) => {
       addedBy,
       orignalsheetid,
       remarks,
-      sheetCanvas,
       pdfBase64,
       pdfName,
     } = req.body;
@@ -37,7 +36,6 @@ const postRemnantStocks = async (req, res) => {
       remarks,
       sheetType: "remnant",
       quantity: 1,
-      sheetCanvas,
       pdfData: pdfBase64 || null,
       pdfName: pdfName || null,
     });
@@ -98,7 +96,6 @@ const putRemnantStocksbyID = async (req, res) => {
     addedBy,
     companyname,
     shapeDescription,
-    sheetCanvas,
     pdfBase64,
     pdfName,
   } = req.body;
@@ -154,7 +151,6 @@ const putRemnantStocksbyID = async (req, res) => {
       companyname,
       shapeDescription,
       sheetType: "remnant",
-      sheetCanvas,
       pdfData: pdfBase64 || null,
       pdfName: pdfName || null,
     },

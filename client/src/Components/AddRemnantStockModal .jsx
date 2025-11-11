@@ -5,7 +5,7 @@ import Select from "react-select";
 import axios from "axios";
 import { useNavigate } from "react-router";
 
-function AddRemnantStockModal({ onClose }) {
+function AddRemnantStockModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -24,13 +24,10 @@ function AddRemnantStockModal({ onClose }) {
     addedBy: "",
     companyname: "",
     shapeDescription: "",
-    sheetCanvas: "",
   });
 
   // ✅ PDF File State
   const [pdfFile, setPdfFile] = useState(null);
-
-  let remnantCanvasData = localStorage.getItem("remnantSheetCanvas");
 
   // ✅ Convert PDF → Base64
   const convertToBase64 = (file) => {
@@ -88,26 +85,12 @@ function AddRemnantStockModal({ onClose }) {
     return true;
   };
 
-  // ✅ Navigate to canvas draw page
-  const handleRemnantDrawShape = () => {
-    if (!validateForm()) return;
-    localStorage.setItem("RemnantStockForm", JSON.stringify(remnantStock));
-    localStorage.setItem("RemnantStockDimensions", JSON.stringify(dimensions));
-    navigate("/remnantcanvas");
-  };
-
   // ✅ Save stock (FINAL)
   const addstock = async () => {
     try {
       setIsSubmitting(true);
-
-      const storedForm = localStorage.getItem("RemnantStockForm");
-      const restoredStock = storedForm ? JSON.parse(storedForm) : remnantStock;
-
-      const storedDimensions = localStorage.getItem("RemnantStockDimensions");
-      const restoredDimensions = storedDimensions
-        ? JSON.parse(storedDimensions)
-        : dimensions;
+      const restoredStock = remnantStock;
+      const restoredDimensions = dimensions;
 
       // ✅ PDF convert
       let base64Pdf = null;
@@ -123,7 +106,6 @@ function AddRemnantStockModal({ onClose }) {
         ...restoredStock,
         dimensions: restoredDimensions,
         weight: calculatedWeight,
-        sheetCanvas: remnantCanvasData,
         addedBy: user?._id,
 
         // ✅ Add PDF
@@ -138,11 +120,6 @@ function AddRemnantStockModal({ onClose }) {
 
       if (response?.data?.success) {
         toast.success(response.data.message);
-
-        localStorage.removeItem("remnantSheetCanvas");
-        localStorage.removeItem("RemnantStockForm");
-        localStorage.removeItem("RemnantStockDimensions");
-
         setTimeout(() => {
           window.location.href = "/";
         }, 1000);
@@ -182,12 +159,6 @@ function AddRemnantStockModal({ onClose }) {
   useEffect(() => {
     setUser(getCurrentuser());
     fetchSheets();
-
-    const savedForm = localStorage.getItem("RemnantStockForm");
-    if (savedForm) setRemnantStock(JSON.parse(savedForm));
-
-    const savedDim = localStorage.getItem("RemnantStockDimensions");
-    if (savedDim) setDimensions(JSON.parse(savedDim));
   }, []);
 
   return (
@@ -343,7 +314,10 @@ function AddRemnantStockModal({ onClose }) {
         {/* ✅ PDF Upload Section */}
         <section>
           <h2 className="text-xl font-semibold mb-3 border-b pb-2">
-            Attach PDF
+            Attach PDF{" "}
+            <span className="text-[12px] text-gray-400 ">
+              Please upload a PDF file by clicking below 👇 size should be 15kb
+            </span>
           </h2>
 
           <input
@@ -358,37 +332,6 @@ function AddRemnantStockModal({ onClose }) {
               Selected: <strong>{pdfFile.name}</strong>
             </p>
           )}
-        </section>
-
-        {/* ✅ Canvas Preview */}
-        <section>
-          <h2 className="text-xl font-semibold mb-3 border-b pb-2">
-            Shape Drawing
-          </h2>
-
-          <div className="flex flex-col sm:flex-row gap-6">
-            <button
-              onClick={handleRemnantDrawShape}
-              className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              Draw Shape
-            </button>
-
-            <div>
-              <h3 className="font-medium mb-2">Preview:</h3>
-              {remnantCanvasData ? (
-                <img
-                  src={remnantCanvasData}
-                  alt="Sheet Canvas"
-                  className="w-80 border rounded-lg shadow-sm"
-                />
-              ) : (
-                <div className="w-80 h-40 border border-dashed rounded-lg flex justify-center items-center text-gray-400">
-                  No Preview
-                </div>
-              )}
-            </div>
-          </div>
         </section>
 
         {/* ✅ Action Buttons */}

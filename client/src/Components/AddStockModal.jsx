@@ -19,10 +19,7 @@ function AddStockModal() {
     addedBy: "",
     companyname: "",
     shapeDescription: "",
-    sheetCanvas: "",
   });
-
-  const canvaData = localStorage.getItem("sheetCanvas");
 
   // Add new length-width pair (for remnant)
   const handleAddDimension = () => {
@@ -58,33 +55,23 @@ function AddStockModal() {
     return true;
   };
 
-  // Navigate to Canvas
-  const handleDrawShape = () => {
-    if (!validateForm()) return;
-    localStorage.setItem("newStockForm", JSON.stringify(newStock));
-    navigate("/canvas");
-  };
-
   // Save stock data
   const addStock = async () => {
     try {
       if (!validateForm()) return;
 
       setIsSubmitting(true);
-      const sheetData = localStorage.getItem("newStockForm");
-      const restoredStock = sheetData ? JSON.parse(sheetData) : newStock;
+      const restoredStock = newStock;
 
       const payload =
         newStock.sheetType === "remnant"
           ? {
               ...restoredStock,
               dimensions,
-              sheetCanvas: canvaData,
               addedBy: user?._id,
             }
           : {
               ...restoredStock,
-              sheetCanvas: canvaData,
               addedBy: user?._id,
             };
 
@@ -95,8 +82,6 @@ function AddStockModal() {
 
       if (response?.data?.success) {
         toast.success(response.data.message);
-        localStorage.removeItem("sheetCanvas");
-        localStorage.removeItem("newStockForm");
         setTimeout(() => {
           window.location.href = "/";
         }, 1000);
@@ -112,10 +97,6 @@ function AddStockModal() {
 
   useEffect(() => {
     setUser(getCurrentuser());
-    const savedForm = localStorage.getItem("newStockForm");
-    if (savedForm) {
-      setNewStock(JSON.parse(savedForm));
-    }
   }, []);
 
   return (
@@ -281,30 +262,6 @@ function AddStockModal() {
                     })
                   }
                 />
-              </div>
-
-              <div className="mt-4">
-                <button
-                  onClick={handleDrawShape}
-                  className="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                >
-                  Draw Shape
-                </button>
-
-                <div className="mt-4">
-                  <h4 className="font-semibold mb-2">Preview:</h4>
-                  {canvaData ? (
-                    <img
-                      src={canvaData}
-                      alt="Sheet Canvas"
-                      className="w-80 h-auto border border-gray-300 rounded-lg shadow-sm"
-                    />
-                  ) : (
-                    <div className="w-80 h-40 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
-                      No Preview
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </section>

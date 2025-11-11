@@ -6,6 +6,7 @@ import { getCurrentuser } from "../utils/utils";
 function Update() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState(null);
   const [updateStock, setUpdateStock] = useState({
     thickness: "",
@@ -16,9 +17,7 @@ function Update() {
     addedBy: "",
     companyname: "",
     shapeDescription: "",
-    sheetCanvas: "",
   });
-  let updateCanvasData = localStorage.getItem("updateSheetCanvas");
   const validateForm = () => {
     if (
       !updateStock.thickness ||
@@ -32,11 +31,6 @@ function Update() {
     }
     return true;
   };
-  const handleDrawShape = () => {
-    if (!validateForm()) return;
-    localStorage.setItem("updateStockForm", JSON.stringify(updateStock));
-    navigate(`/updatecanvas/${id}`);
-  };
   const update = async () => {
     const response = await axios.get(
       `${import.meta.env.VITE_API_URL}/stocks/${id}`
@@ -48,11 +42,15 @@ function Update() {
   }, [id]);
   const updatestock = async () => {
     try {
+      setIsSubmitting(true);
+      if (!validateForm()) {
+        setIsSubmitting(false);
+        return;
+      }
       const update = localStorage.getItem("updateStockForm");
       const restoredStock = update ? JSON.parse(update) : updateStock;
       const payload = {
         ...restoredStock,
-        sheetCanvas: updateCanvasData,
         addedBy: user?._id,
       };
 
@@ -63,14 +61,16 @@ function Update() {
 
       if (response?.data?.success) {
         toast.success(response.data.message);
-        localStorage.removeItem("updateSheetCanvas");
-        localStorage.removeItem("updateStockForm");
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 1000);
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Error Updating stock");
+    } finally {
+      setTimeout(() => {
+        setIsSubmitting(false);
+      }, 2000);
     }
   };
 
@@ -81,10 +81,6 @@ function Update() {
   };
   useEffect(() => {
     setUser(getCurrentuser());
-    const savedForm = localStorage.getItem("updateStockForm");
-    if (savedForm) {
-      setUpdateStock(JSON.parse(savedForm));
-    }
   }, []);
   const baseFields = [
     { label: "Thickness (mm)", key: "thickness", type: "number" },
@@ -166,22 +162,6 @@ function Update() {
                   Draw Shape
                 </button>
               </div>
-
-              {/* Preview Section */}
-              <div className="space-y-2">
-                <h2 className="text-gray-700 font-medium">Preview:</h2>
-                {updateCanvasData ? (
-                  <img
-                    src={updateCanvasData}
-                    alt="Sheet Canvas"
-                    className="w-80 h-56 border border-gray-300 rounded-lg shadow-sm object-contain"
-                  />
-                ) : (
-                  <div className="w-80 h-56 flex items-center justify-center border border-dashed border-gray-300 rounded-lg text-gray-400 italic text-sm">
-                    No Preview
-                  </div>
-                )}
-              </div>
             </div>
           )}
 
@@ -196,9 +176,14 @@ function Update() {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-95 transition text-sm"
+              disabled={isSubmitting}
+              className={`px-6 py-2 rounded-lg text-white font-semibold ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
             >
-              Update
+              {isSubmitting ? "Updating..." : "Update Stock"}
             </button>
           </div>
         </form>

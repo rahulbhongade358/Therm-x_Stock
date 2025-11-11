@@ -14,7 +14,6 @@ const postStocks = async (req, res) => {
     companyname,
     addedBy,
     remarks,
-    sheetCanvas,
   } = req.body;
 
   const density = 7850; // kg/m³ for steel
@@ -44,7 +43,6 @@ const postStocks = async (req, res) => {
     companyname,
     addedBy,
     remarks,
-    sheetCanvas,
   });
 
   const saveStock = await newStock.save();
@@ -144,7 +142,6 @@ const putStocksbyID = async (req, res) => {
     addedBy,
     companyname,
     shapeDescription,
-    sheetCanvas,
   } = req.body;
   const density = 7850; // kg/m³ for steel
   const weight = (length * width * thickness * density * quantity) / 1000000000;
@@ -188,7 +185,6 @@ const putStocksbyID = async (req, res) => {
       addedBy,
       companyname,
       shapeDescription,
-      sheetCanvas,
       sheetType: existingStock.sheetType,
     }
   );
